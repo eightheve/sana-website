@@ -57,7 +57,6 @@
   (route/not-found "404"))
 
 (defn start-server []
-  (println (str "Running server on port " (port)))
   (reset! server
           (run-jetty #'app {:port (port) :join? false})))
 
@@ -69,3 +68,7 @@
 (defn restart-server []
   (stop-server)
   (start-server))
+
+(defn -main []
+  (start-server)
+  (println "Server started on port" (port)))
