@@ -37,7 +37,7 @@
 
             user = lib.mkOption {
               type = lib.types.str;
-              default = "sana-helper";
+              default = "sana-sysuser";
               description = "User to run services as";
             };
 
@@ -97,7 +97,7 @@
               };
             };
 
-            systemd.services.sana-backend = {
+            "systemd.services.${cfg.user}-web-backend" = {
               wantedBy = [ "multi-user.target" ];
               after = [ "network.target" ];
               description = "Backend for ${cfg.user}.${cfg.domain}";
