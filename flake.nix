@@ -110,7 +110,7 @@
               serviceConfig = {
                 Type = "simple";
                 User = cfg.user;
-                WorkingDirectory = "${self}/backend";
+                WorkingDirectory = "${self}";
                 EnvironmentFile = cfg.envFile;
                 Environment = [
                   "DB_PATH=${cfg.stateDir}/similar-songs.db"
