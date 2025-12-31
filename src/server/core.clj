@@ -9,6 +9,11 @@
 
 (defonce server (atom nil))
 
+(defn port []
+  (some-> (System/getenv "PORT")
+          Integer/parseInt
+          (or 45000)))
+
 (defn head [lang]
              [:head 
              (layouts/title (keyword lang))
@@ -53,7 +58,7 @@
 
 (defn start-server []
   (reset! server
-          (run-jetty #'app {:port 45000 :join? false})))
+          (run-jetty #'app {:port (port) :join? false})))
 
 (defn stop-server []
   (when @server
