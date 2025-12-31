@@ -81,7 +81,7 @@
                   enableACME = true;
                   root = "${self.packages.${pkgs.system}.default}";
                   locations."/" = {
-                    proxyPass = "https://localhost:${cfg.localPort}/";
+                    proxyPass = "https://localhost:${toString cfg.localPort}/";
                     proxyWebsockets = true;
                     extraConfig = ''
                       proxy_set_header X-Real-IP $remote_addr;
