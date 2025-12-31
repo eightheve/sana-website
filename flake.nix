@@ -29,6 +29,12 @@
           options.services.sana-moe = {
             enable = lib.mkEnableOption "sana website and backend";
 
+            serviceName = lib.mkOption {
+              type = lib.types.str;
+              default = "sana-doppel-moe";
+              description = "Default name for service, user, and directories";
+            };
+
             domain = lib.mkOption {
               type = lib.types.str;
               default = "doppel.moe";
@@ -37,7 +43,7 @@
 
             user = lib.mkOption {
               type = lib.types.str;
-              default = "sana-sysuser";
+              default = "${cfg.serviceName}-user";
               description = "User to run services as";
             };
 
@@ -49,7 +55,7 @@
 
             stateDir = lib.mkOption {
               type = lib.types.path;
-              default = "/var/lib/sana-moe";
+              default = "/var/lib/${cfg.serviceName}";
               description = "State directory for database and persistent data";
             };
 
@@ -79,9 +85,8 @@
                 "${cfg.subDomain}.${cfg.domain}" = {
                   forceSSL = true;
                   enableACME = true;
-                  root = "${self.packages.${pkgs.system}.default}";
                   locations."/" = {
-                    proxyPass = "https://localhost:${toString cfg.localPort}/";
+                    proxyPass = "http://localhost:${toString cfg.localPort}/";
                     proxyWebsockets = true;
                     extraConfig = ''
                       proxy_set_header X-Real-IP $remote_addr;
@@ -97,7 +102,7 @@
               };
             };
 
-            "systemd.services.${cfg.user}-web-backend" = {
+            systemd.services."${cfg.serviceName}" = {
               wantedBy = [ "multi-user.target" ];
               after = [ "network.target" ];
               description = "Backend for ${cfg.user}.${cfg.domain}";
@@ -107,14 +112,14 @@
                 User = cfg.user;
                 WorkingDirectory = "${self}/backend";
                 EnvironmentFile = cfg.envFile;
-                Environment = ''
-                  DB_PATH=${cfg.stateDir}/similar-songs.db"
-                  PORT=${toString cfg.localPort}
-                '';
+                Environment = [
+                  "DB_PATH=${cfg.stateDir}/similar-songs.db"
+                  "PORT=${toString cfg.localPort}"
+                ];
                 ExecStart = "${pkgs.clojure}/bin/clojure -M:run";
                 Restart = "on-failure";
                 RestartSec = "10";
-                StateDirectory = "sana";
+                StateDirectory = cfg.serviceName;
               };
             };
             environment.systemPackages = [ pkgs.clojure ];
