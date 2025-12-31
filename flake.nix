@@ -62,6 +62,7 @@
               type = lib.types.int;
               default = 3200;
               description = "The port for the local backend to run on";
+            };
           };
 
           config = lib.mkIf cfg.enable {
@@ -120,5 +121,5 @@
           };
         };
     };
-  };
 }
+
