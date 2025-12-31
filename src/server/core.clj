@@ -10,9 +10,9 @@
 (defonce server (atom nil))
 
 (defn port []
-  (some-> (System/getenv "PORT")
-          Integer/parseInt
-          (or 45000)))
+  (or (some-> (System/getenv "PORT")
+              Integer/parseInt)
+      45000))
 
 (defn head [lang]
              [:head 
@@ -57,6 +57,7 @@
   (route/not-found "404"))
 
 (defn start-server []
+  (println (str "Running server on port " (port)))
   (reset! server
           (run-jetty #'app {:port (port) :join? false})))
 
