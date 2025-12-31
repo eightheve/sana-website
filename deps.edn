@@ -1,0 +1,5 @@
+{:paths ["src" "resources"]
+ :deps {compojure/compojure {:mvn/version "1.7.1"}
+        ring/ring-jetty-adapter {:mvn/version "1.12.1"}
+        hiccup/hiccup {:mvn/version "2.0.0"}}
+ :aliases {:run {:main-opts ["-m" "server.core"]}}}

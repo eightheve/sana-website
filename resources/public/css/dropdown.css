@@ -1,0 +1,58 @@
+.dropdown {
+	position: relative;
+}
+
+@keyframes rotation {
+	0% { rotation: 0deg; }
+	100% { rotation: 180deg; }
+}
+
+.dropdown > button {
+	background-color: rgba(0, 0, 0, 0);
+	border: none;
+
+	padding: 14px 0;
+	font-size: 1.5rem;
+	cursor: pointer;
+	font-weight: bold;
+	color: var(--color-text);
+}
+
+.dropdown > section {
+	display: none;
+	position: absolute;
+	background-color: var(--color-background-bright);
+	min-width: 164px;
+	box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.4);
+	border-radius: 4px;
+	padding: 0;
+	border: 2px solid var(--color-text-muted);
+}
+
+.dropdown > section a {
+	padding: 12px;
+	text-decoration: none;
+	border-radius: 4px;
+	display: block;
+}
+
+.dropdown > section a:hover {
+	background-color: var(--color-accent-primary-dark);
+	color: var(--color-text);
+}
+
+.dropdown:hover > section, .dropdown:focus-within > section {
+	display: block;
+}
+
+.dropdown button > span.nf {
+	transition: transform 0.2s ease-out;
+	display: inline-flex;
+	margin-left: 10px;
+	justify-content: center;
+	align-items: center;
+}
+
+.dropdown:hover button > span.nf, .dropdown:focus-within button > span.nf {
+	transform: rotate(180deg);
+}

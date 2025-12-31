@@ -1,0 +1,31 @@
+{
+:title {:en "Sana's Homepage"
+        :tok "tomo pi ilo Sana"}
+
+:header {:home-label {:en "HOME" :tok "tomo mi"}
+         :home-index {:en "HOMEPAGE" :tok "lipu pi tomo mi"}
+         :home-about {:en "ABOUT ME" :tok "lipu sona mi"}
+         :home-updates {:en "UPDATES" :tok "ijo sin"}
+
+         :spaces-label {:en "SPACES" :tok "ma pi ijo mute"}
+         :spaces-music {:en "MUSIC REVIEW" :tok "ma pi kalama musi"}           
+         :spaces-nixos {:en "NIXOS" :tok "ma pi ilo [nasa ilo ken olin]"}
+          
+         :other-label {:en "OTHER" :tok "ale"}
+         :other-album_map {:en "ALBUM MAP" :tok "ma li kalama musi kulupu"}
+         :other-chatroom {:en "CHATROOM" :tok "tomo toki"}}
+
+:sidebar {:webring-header {:en "WEBRINGS" :tok "nasin tawa sike pi kulupu lipu"}
+          :visit-counter {:en "VISIT COUNTER" :tok "nanpa pi jan lon ni"}
+          :contact {:en "CONTACT ME" :tok "o toki mi kepeken nasin ni"}}
+
+:index {:introduction/header {:en "INTRODUCTION" :tok "toki pi kama pona"}
+        :introduction/body {:en ("Welcome! I'm Sana (or doppelsana/matty) and you're on my website! I'm happy to have you here, and I hope you'll stay to take a look around. More information about me can be found "
+                                      [:a {:href "/en/about-me.html"} "here! "]
+                                      [:br] [:br]
+                                      "This website serves as a landing place for all things Sana, but mostly it's a playground for me to try out many things. It is currently very unfinished! But it is being worked on actively. Right now this entire website is powered by a backend written in clojure, using hiccup to generate the html, which means this site is almost entirely devoid of frontend logic, and is still able to serve dynamic content! ")
+                            :tok ""}
+
+        :pgp/header {:en "" :tok ""}
+        :pgp/body {:en "" :tok ""}}
+}

@@ -1,0 +1,150 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('/sitelen-pona/linja-Eko.css');
+
+@import url('/css/dropdown.css');
+@import url('/css/header.css');
+
+/* ==================== VARIABLES ==================== */
+
+:root {
+    --color-text: #e3e3e3;
+    --color-text-muted: #a3a3a3;
+    --color-background: #070707;
+    --color-background-bright: #171717;
+
+    --color-accent-primary-light: #3fb68f;
+    --color-accent-primary-dark:  #027c5c;
+
+    --color-accent-secondary-light: #eba254;
+    --color-accent-secondary-dark:  #ae783e;
+
+    --border-main: 6px double var(--color-text);
+}
+
+/* ==================== I18N ==================== */
+
+*:lang(en) {
+	font-family: "IBM Plex Mono", monospace;
+}
+
+*:lang(tok) {
+	font-family: "linja Eko", monospace;
+}
+
+/* ==================== BASE ==================== */
+
+html {
+    width: 100vw;
+    height: 100vh;
+    padding: 24px 32px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0 auto;
+    max-width: 1200px;
+    background: var(--color-background);
+    color: var(--color-text);
+    font-family: "IBM Plex Mono", monospace;
+}
+
+/* ==================== TYPOGRAPHY ==================== */
+
+h2, h3 {
+    margin: 13px 0 5px;
+}
+
+p {
+    margin: 3px 0 21px;
+}
+
+a:visited, a { 
+    color: var(--color-accent-primary-light);
+}
+
+a:active, a:hover {
+    color: var(--color-accent-primary-dark); 
+    text-decoration: underline; 
+}
+
+a  { text-decoration: none; font-weight: bold; }
+hr { color: var(--color-text); }
+
+/* ==================== CLASS UTILITIES ==================== */
+
+.border {
+    border: var(--border-main);
+}
+
+.addr-at {
+    color: var(--color-text-muted);
+}
+
+.addr-at::before {
+    content: "[at]"
+}
+
+
+.addr-label {
+    text-align: right;
+    white-space: nowrap;
+    width: 20%;
+}
+
+.addr-filler {
+    position: relative;
+}
+
+.addr-filler > div {
+    position: absolute;
+    background-color: white;
+    left: 4px;
+    right: 4px;
+    top: calc(50% - 0px);
+    bottom: calc(50% - 1px);
+}
+
+.addr-content {
+    text-align: left;
+    white-space: nowrap;
+    width: 60%;
+}
+
+/* ==================== INDEX ==================== */
+
+#index-main {
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    align-items: flex-start;
+}
+
+#index-main > * {
+    border: var(--border-main);
+    padding: 0 8px 12px;
+}
+
+#index-main > main {
+    flex-grow: 4;
+    min-width: 512px;
+}
+
+#index-main > div {
+    flex-grow: 1;
+    min-width: 256px;
+}
+
+#index-main > div table {
+    width: 100%;
+}
+
+#webrings td.prev {text-align: left;}
+#webrings td.home {text-align: center;}
+#webrings td.next {text-align: right;}
+
+address p > span {
+    float: right;
+}
