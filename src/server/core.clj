@@ -70,5 +70,5 @@
   (start-server))
 
 (defn -main []
-  (start-server)
+  (restart-server)
   (println "Server started on port" (port)))
