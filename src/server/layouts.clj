@@ -2,7 +2,8 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.string :as string]
-            [server.lastfm :as lastfm]))
+            [server.lastfm :as lastfm]
+            [server.time-diff :refer [largest-utc-diff]]))
 
 (def content
   (edn/read-string (slurp (io/resource "server/content.edn"))))
@@ -58,6 +59,18 @@
      :image-url (get-in track [:image :text])
      :url (get-in track [:url :text])
      :date-unix (get-in track [:date :uts])}))
+
+(defn fuzzy-time-since [utc]
+  (let [time-since (largest-utc-diff
+                     (java.time.Instant/ofEpochSecond
+                       (Long/parseLong utc)))
+        amount (get time-since :amount)
+        unit (get time-since :unit)]
+    (if (or (= unit "second")
+            (= unit "seconds")
+            (and (< amount 8) (or (= unit "minute") (= unit "minutes"))))
+      "Listening now"
+      (string/join " " [amount unit "ago"]))))
 
 ;; PAGES
 
