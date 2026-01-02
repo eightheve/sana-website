@@ -2,4 +2,9 @@
  :deps {compojure/compojure {:mvn/version "1.7.1"}
         ring/ring-jetty-adapter {:mvn/version "1.12.1"}
         hiccup/hiccup {:mvn/version "2.0.0"}}
- :aliases {:run {:main-opts ["-m" "server.core"]}}}
+ :aliases {:run {:main-opts ["-m" "server.core"]}
+           :repl/conjure {:extra-deps {nrepl/nrepl {:mvn/version "1.0.0"}
+                                       cider/cider-nrepl {:mvn/version "0.42.1"}}
+                          :main-opts ["--main" "nrepl.cmdline"
+                                      "--middleware" "[cider.nrepl/cider-middleware]"
+                                      "--interactive"]}}}
