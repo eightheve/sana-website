@@ -72,6 +72,30 @@
       "Listening now"
       (string/join " " [amount unit "ago"]))))
 
+(defn get-status [lang]
+  [:div {:id "status"}
+   [:p (t lang :status :now-listening)]
+   (let [last-song (get-last-song)
+         title (get last-song :name)
+         album (get last-song :album)
+         artist (get last-song :artist)
+         image-url (get last-song :image-url)
+         date-unix (get last-song :date-unix)]
+     [:div {:class "last-song"}
+      [:img {:src image-url}]
+      [:p {:class "marquee"} 
+       [:span
+        [:span title]
+        " from "
+         [:span album]
+         " by "
+         [:span artist]]]
+      [:script {:src "/js/marquee.js"}]
+      [:p 
+       (fuzzy-time-since date-unix)]])
+   [:p (t lang :status :now-feeling)]
+   [:p {:lang "tok"} "pona"]])
+
 ;; PAGES
 
 (defn index [lang]
@@ -83,7 +107,10 @@
                             [:p (ft :index :introduction/body)]]
                   [:article [:h3 (ft :index :pgp/header)]
                             [:p (ft :index :pgp/body)]]]
-           [:div [:nav {:id "webrings"}
+           [:div [:article]
+                  [:h3 (ft :sidebar :status-header)]
+                  (get-status lang)
+                 [:nav {:id "webrings"}
                   [:h3 (ft :sidebar :webring-header)]
                   [:table {:lang "en"}
                   (let [webrings {:bucket {:label "bucket ring"
