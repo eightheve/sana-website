@@ -24,11 +24,11 @@
 /* ==================== I18N ==================== */
 
 *:lang(en) {
-	font-family: "IBM Plex Mono", monospace;
+    font-family: "IBM Plex Mono", monospace;
 }
 
 *:lang(tok) {
-	font-family: "linja Eko", monospace;
+    font-family: "linja Eko", monospace;
 }
 
 /* ==================== BASE ==================== */
