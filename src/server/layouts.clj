@@ -105,6 +105,8 @@
      [:div {:id "index-main"}
            [:main [:article [:h2 (ft :index :introduction/header)]
                             [:p (ft :index :introduction/body)]]
+                  [:article [:h2 (ft :index :meta/header)]
+                            [:p (ft :index :meta/body)]]
                   [:article [:h3 (ft :index :pgp/header)]
                             [:p (ft :index :pgp/body)]]]
            [:div [:article]
