@@ -113,6 +113,18 @@ hr { color: var(--color-text); }
     width: 60%;
 }
 
+.marquee {
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+}
+
+.marquee > span {
+    display: inline-block;
+    will-change: transform;
+    padding-right: 1rem;
+}
+
 /* ==================== INDEX ==================== */
 
 #index-main {
