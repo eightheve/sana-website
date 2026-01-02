@@ -140,13 +140,14 @@ hr { color: var(--color-text); }
 }
 
 #index-main > main {
-    flex-grow: 4;
+    flex-grow: 3;
     min-width: 512px;
+    max-width: 70%
 }
 
 #index-main > div {
-    flex-grow: 1;
-    min-width: 256px;
+    flex-grow: 2;
+    min-width: 300px;
 }
 
 #index-main > div table {
