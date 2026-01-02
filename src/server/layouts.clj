@@ -1,7 +1,8 @@
 (ns server.layouts
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [server.lastfm :as lastfm]))
 
 (def content
   (edn/read-string (slurp (io/resource "server/content.edn"))))
@@ -46,6 +47,17 @@
 
 (defn title [lang]
   [:title (t lang :title)])
+
+(defn get-last-song []
+  (let [lastfm-username "LiquidC2H2"
+        response (lastfm/get-recent-tracks lastfm-username {:limit 1})
+        track (get-in response [:lfm :recenttracks :track])]
+    {:name (get-in track [:name :text])
+     :artist (get-in track [:artist :text])
+     :album (get-in track [:album :text])
+     :image-url (get-in track [:image :text])
+     :url (get-in track [:url :text])
+     :date-unix (get-in track [:date :uts])}))
 
 ;; PAGES
 
