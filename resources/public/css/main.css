@@ -161,3 +161,40 @@ hr { color: var(--color-text); }
 address p > span {
     float: right;
 }
+
+.last-song {
+    display: grid;
+    grid-template-rows: 1.5rem 1.5rem;
+    grid-template-columns: 3rem 1fr;
+    grid-template-areas:
+	"img title"
+	"img time-since";
+}
+
+.last-song p {
+    margin: 0;
+    padding-left: 8px;
+}
+
+.last-song p:has(span) {
+    box-shadow: 8px 0px 6px 0 var(--color-background) inset;
+}
+
+.last-song p {
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+.last-song p > span > span {
+    color: var(--color-text);
+    font-weight: 500;
+}
+
+.last-song img {
+    grid-area: img;
+    height: 100%;
+    width: 100%;
+
+    border-radius: 2px;
+    border: 2px solid var(--color-accent-primary-light);
+}
