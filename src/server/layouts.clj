@@ -50,8 +50,7 @@
   [:title (t lang :title)])
 
 (defn get-last-song []
-  (let [lastfm-username "LiquidC2H2"
-        response (lastfm/get-recent-tracks lastfm-username {:limit 1})
+  (let [response (lastfm/get-last-song (System/getenv "LASTFM_USERNAME"))
         track (get-in response [:lfm :recenttracks :track])]
     {:name (get-in track [:name :text])
      :artist (get-in track [:artist :text])

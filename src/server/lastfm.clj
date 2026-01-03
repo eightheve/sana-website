@@ -34,3 +34,28 @@
   "Fetches recent tracks for a user"
   [user & {:keys [limit] :or {limit 10}}]
   (fetch "user.getRecentTracks" :user user :limit limit))
+
+;; PREVIOUS SONG (FOR server.layouts)
+
+(def last-song-cache (atom {}))
+
+(defn- update-cache! [user]
+  (try
+    (let [track (get-recent-tracks user :limit 1)]
+      (swap! last-song-cache assoc user 
+             {:track track :updated-at (System/currentTimeMillis)}))
+    (catch Exception e
+      (println "Failed to update cache for" user ":" (.getMessage e)))))
+
+(defn start-updater! 
+  "Starts background updater for user's last song. Returns future."
+  [user interval-ms]
+  (future
+    (while true
+      (update-cache! user)
+      (Thread/sleep interval-ms))))
+
+(defn get-last-song
+  "Returns cached last song for user, or nil if not yet cached"
+  [user]
+  (get-in @last-song-cache [user :track]))

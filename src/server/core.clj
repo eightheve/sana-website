@@ -5,6 +5,7 @@
             [ring.util.response :refer [redirect]]
             [hiccup2.core :as h]
             
+            [server.lastfm :as lastfm]
             [server.layouts :as layouts]))
 
 (defonce server (atom nil))
@@ -70,5 +71,6 @@
   (start-server))
 
 (defn -main []
+  (lastfm/start-updater! (System/getenv "LASTFM_USERNAME") (* 2 1000 60))
   (restart-server)
   (println "Server started on port" (port)))
