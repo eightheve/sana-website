@@ -169,6 +169,9 @@ address p > span {
     grid-template-areas:
 	"img title"
 	"img time-since";
+
+    margin-top: 12px;
+    margin-bottom: 12px;
 }
 
 .last-song p {
