@@ -69,18 +69,17 @@
             (= unit "seconds")
             (and (< amount 8) (or (= unit "minute") (= unit "minutes"))))
       "Listening now"
-      (string/join " " [amount unit "ago"]))))
+      (string/join " " ["Listened" amount unit "ago"]))))
 
 (defn get-status [lang]
   [:div {:id "status"}
-   [:p (t lang :status :now-listening)]
    (let [last-song (get-last-song)
          title (get last-song :name)
          album (get last-song :album)
          artist (get last-song :artist)
          image-url (get last-song :image-url)
          date-unix (get last-song :date-unix)]
-     [:div {:class "last-song"}
+     [:div {:class "last-song" :lang "en"}
       [:img {:src image-url}]
       [:p {:class "marquee"} 
        [:span
@@ -92,8 +91,9 @@
       [:script {:src "/js/marquee.js"}]
       [:p 
        (fuzzy-time-since date-unix)]])
-   [:p (t lang :status :now-feeling)]
-   [:p {:lang "tok"} "pona"]])
+   [:table [:tr
+            [:td (t lang :status :mood)]
+            [:td {:lang "tok"} "ilo [soweli anpa nasa ante] li pilin pona"]]]])
 
 ;; PAGES
 
