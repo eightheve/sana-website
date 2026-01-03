@@ -17,15 +17,26 @@
 
 :sidebar {:webring-header {:en "WEBRINGS" :tok "nasin tawa sike pi kulupu lipu"}
           :visit-counter {:en "VISIT COUNTER" :tok "nanpa pi jan lon ni"}
-          :contact {:en "CONTACT ME" :tok "o toki mi kepeken nasin ni"}}
+          :contact {:en "CONTACT ME" :tok "o toki mi kepeken nasin ni"}
+          :status-header {:en "CURRENT STATUS" :tok "tenpo ni la ilo [soweli anpa nasa ante] li seme"}}
+
+:status {:mood {:en "Mood:" :tok "pilin:"}}
 
 :index {:introduction/header {:en "INTRODUCTION" :tok "toki pi kama pona"}
-        :introduction/body {:en ("Welcome! I'm Sana (or doppelsana/matty) and you're on my website! I'm happy to have you here, and I hope you'll stay to take a look around. More information about me can be found "
-                                      [:a {:href "/en/about-me.html"} "here! "]
-                                      [:br] [:br]
-                                      "This website serves as a landing place for all things Sana, but mostly it's a playground for me to try out many things. It is currently very unfinished! But it is being worked on actively. Right now this entire website is powered by a backend written in clojure, using hiccup to generate the html, which means this site is almost entirely devoid of frontend logic, and is still able to serve dynamic content! ")
+        :introduction/body   {:en ("Welcome! I'm Sana (or Matty) and you're on my website! I'm happy to have you here, and I hope you'll stay to take a look around. More information about me can be found " [:a {:href "/en/about-me.html"} "here!"])
                             :tok ""}
 
-        :pgp/header {:en "" :tok ""}
-        :pgp/body {:en "" :tok ""}}
+        :pgp/header {:en "PGP INFO"
+                     :tok ""}
+        :pgp/body   {:en ("You can find my PGP public key (which is also linked above) at "
+                          [:a {:target "_blank" :href "/key.asc"} "https://sana.doppel.moe/key.asc. "] 
+                          "This key is relatively new to me, so don't be too alarmed if something from me is not signed by this key! Going forward though this site will serve as the central point for my online identity, any online accounts which appear to be me but are not listed or referenced on this site are not verifiably me unless confirmed by one of the listed contacts OR verified through PGP signing."
+                          [:br][:br]
+                          "You can also use this public key to send me encrypted files via email or discord if you, for whatever reason, do not trust communication via these channels on their own merit. If you want more information about OpenPGP and PGP standards go "
+                          [:a {:href "https://www.openpgp.org/" :target "_blank"} "here."]) :tok ""}
+        
+        :meta/header {:en "META" :tok ""}
+        :meta/body   {:en ("This website serves as a landing place for all things Sana, but mostly it's a playground for me to try out many things. It is currently very unfinished! But it is being worked on actively. Right now this entire website is powered by a backend written in clojure, using hiccup to generate the html, which means this site is almost entirely devoid of frontend logic, and is still able to serve dynamic content! The source code for this website can be found " 
+                                 [:a {:target "_blank" :href "https://github.com/eightheve/sana-website"} "here" ]
+                                  ", along with the flake I use to package it for my server.") :tok ""}}
 }

@@ -102,9 +102,12 @@
     (list 
      (page-header lang)
      [:div {:id "index-main"}
-           [:main [:article [:h2 (ft :index :introduction/header)]
+           [:main [:article {:lang "en"}
+                            [:h2 "DISCLAIMER"]
+                            [:p "This website is still very much " [:b "under construction!"] " I appreciate your patience as things get finished. If you're seeing this, expect broken links, missing content, potential connection hiccups, and more. This is a live development environment for me, cut me some slack. Thank you!"]]
+                  [:article [:h2 (ft :index :introduction/header)]
                             [:p (ft :index :introduction/body)]]
-                  [:article [:h2 (ft :index :meta/header)]
+                  [:article [:h3 (ft :index :meta/header)]
                             [:p (ft :index :meta/body)]]
                   [:article [:h3 (ft :index :pgp/header)]
                             [:p (ft :index :pgp/body)]]]
