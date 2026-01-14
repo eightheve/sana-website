@@ -1,1 +1,2 @@
-resources/public/nf/* linguist-ignore
+resources/public/nf/* linguist-vendored
+flake.lock linguist-generated
