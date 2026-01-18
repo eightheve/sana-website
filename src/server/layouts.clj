@@ -43,8 +43,8 @@
                   (for [[path key] items]
                     {:href (str "/" lang path)
                      :label (t lang-kw :header key)})))
-      [:div {:id "pubkey"} 
-       [:a {:href "/key.asc" :target "_blank" :lang "en" } "PUBKEY"]]]]))
+      [:div {:id "pubkey"}
+       [:a {:href "/key.asc" :target "_blank" :lang "en"} "PUBKEY"]]]]))
 
 (defn title [lang]
   [:title (t lang :title)])
@@ -61,8 +61,8 @@
 
 (defn fuzzy-time-since [utc]
   (let [time-since (largest-utc-diff
-                     (java.time.Instant/ofEpochSecond
-                       (Long/parseLong utc)))
+                    (java.time.Instant/ofEpochSecond
+                     (Long/parseLong utc)))
         amount (get time-since :amount)
         unit (get time-since :unit)]
     (if (or (= unit "second")
@@ -81,15 +81,15 @@
          date-unix (get last-song :date-unix)]
      [:div {:class "last-song" :lang "en"}
       [:img {:src image-url}]
-      [:p {:class "marquee"} 
+      [:p {:class "marquee"}
        [:span
         [:span title]
         " from "
-         [:span album]
-         " by "
-         [:span artist]]]
+        [:span album]
+        " by "
+        [:span artist]]]
       [:script {:src "/js/marquee.js"}]
-      [:p 
+      [:p
        (fuzzy-time-since date-unix)]])
    [:table [:tr
             [:td (t lang :status :mood)]
@@ -99,54 +99,55 @@
 
 (defn index [lang]
   (let [ft (partial t (keyword lang))]
-    (list 
+    (list
      (page-header lang)
      [:div {:id "index-main"}
-           [:main [:article {:lang "en"}
-                            [:h2 "DISCLAIMER"]
-                            [:p "This website is still very much " [:b "under construction!"] " I appreciate your patience as things get finished. If you're seeing this, expect broken links, missing content, potential connection hiccups, and more. This is a live development environment for me, cut me some slack. Thank you!"]]
-                  [:article [:h2 (ft :index :introduction/header)]
-                            [:p (ft :index :introduction/body)]]
-                  [:article [:h3 (ft :index :meta/header)]
-                            [:p (ft :index :meta/body)]]
-                  [:article [:h3 (ft :index :pgp/header)]
-                            [:p (ft :index :pgp/body)]]]
-           [:div [:article]
-                  [:h3 (ft :sidebar :status-header)]
-                  (get-status lang)
-                 [:nav {:id "webrings"}
-                  [:h3 (ft :sidebar :webring-header)]
-                  [:table {:lang "en"}
-                  (let [webrings {:bucket {:label "bucket ring"
-                                           :url "https://webring.bucketfish.me/"
-                                           :next "redirect.html?to=next&name=matty"
-                                           :prev "redirect.html?to=prev&name=matty"}
-                                  :geek {:label "geek ring"
-                                         :url "https://geekring.net/"
-                                         :next "site/381/next"
-                                         :prev "site/381/prev"}
-                                  :silly {:label "silly city"
-                                         :url "https://silly.city/"
-                                         :next "next?user=matty"
-                                         :prev "prev?user=matty"}}]
-                    (for [[ring {:keys [label url next prev]}] webrings]
-                      [:tr {:id (str "ring-navigator-" (name ring))}
-                           [:td {:class "prev"} [:a {:href (str url prev)} "←"]]
-                           [:td {:class "home"} [:a {:href url} label]]
-                           [:td {:class "next"} [:a {:href (str url next)} "→"]]]))]]
-                 [:article
-                  [:h3 (ft :sidebar :visit-counter)]
-                  [:img {:src "https://count.getloli.com/@transatlanticism?name=transatlanticism&theme=green&padding=5&offset=0&align=top&scale=1&pixelated=1&darkmode=0" :style "margin:0 calc((100% - 225px) / 2)"}]]
-                 [:article
-                  [:h3 (ft :sidebar :contact)]
-                  [:address {:lang "en"}
-                   [:table
-                            (let [at-symbol [:span {:class "addr-at"}]
-                                  contacts {:email [:span "sana" at-symbol "doppel.moe"]
-                                            :discord  [:span at-symbol "parchedocean"]
-                                            :tumblr [:span at-symbol "doppelsana"]
-                                            :steam [:span at-symbol "doppelsana"]}]
-                              (for [[label content] contacts]
-                                [:tr [:td {:class "addr-label"} (name label)]
-                                     [:td {:class "addr-filler"} [:div]]
-                                     [:td {:class "addr-content"}content]]))]]]]])))
+      [:main [:article {:lang "en"}
+              [:h2 "DISCLAIMER"]
+              [:p "This website is still very much " [:b "under construction!"] " I appreciate your patience as things get finished. If you're seeing this, expect broken links, missing content, potential connection hiccups, and more. This is a live development environment for me, cut me some slack. Thank you!"]]
+       [:article [:h2 (ft :index :introduction/header)]
+        [:p (ft :index :introduction/body)]]
+       [:article [:h3 (ft :index :meta/header)]
+        [:p (ft :index :meta/body)]]
+       [:article [:h3 (ft :index :pgp/header)]
+        [:p (ft :index :pgp/body)]]]
+      [:div [:article]
+       [:h3 (ft :sidebar :status-header)]
+       (get-status lang)
+       [:nav {:id "webrings"}
+        [:h3 (ft :sidebar :webring-header)]
+        [:table {:lang "en"}
+         (let [webrings {:bucket {:label "bucket ring"
+                                  :url "https://webring.bucketfish.me/"
+                                  :next "redirect.html?to=next&name=matty"
+                                  :prev "redirect.html?to=prev&name=matty"}
+                         :geek {:label "geek ring"
+                                :url "https://geekring.net/"
+                                :next "site/381/next"
+                                :prev "site/381/prev"}
+                         :silly {:label "silly city"
+                                 :url "https://silly.city/"
+                                 :next "next?user=matty"
+                                 :prev "prev?user=matty"}}]
+           (for [[ring {:keys [label url next prev]}] webrings]
+             [:tr {:id (str "ring-navigator-" (name ring))}
+              [:td {:class "prev"} [:a {:href (str url prev)} "←"]]
+              [:td {:class "home"} [:a {:href url} label]]
+              [:td {:class "next"} [:a {:href (str url next)} "→"]]]))]]
+       [:article
+        [:h3 (ft :sidebar :visit-counter)]
+        [:img {:src "https://count.getloli.com/@transatlanticism?name=transatlanticism&theme=green&padding=5&offset=0&align=top&scale=1&pixelated=1&darkmode=0" :style "margin:0 calc((100% - 225px) / 2)"}]]
+       [:article
+        [:h3 (ft :sidebar :contact)]
+        [:address {:lang "en"}
+         [:table
+          (let [at-symbol [:span {:class "addr-at"}]
+                contacts {:email [:span "sana" at-symbol "doppel.moe"]
+                          :discord  [:span at-symbol "parchedocean"]
+                          :tumblr [:span at-symbol "doppelsana"]
+                          :steam [:span at-symbol "doppelsana"]}]
+            (for [[label content] contacts]
+              [:tr [:td {:class "addr-label"} (name label)]
+               [:td {:class "addr-filler"} [:div]]
+               [:td {:class "addr-content"} content]]))]]]]])))
+

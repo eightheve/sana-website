@@ -42,12 +42,12 @@
 (defn- update-cache! [user]
   (try
     (let [track (get-recent-tracks user :limit 1)]
-      (swap! last-song-cache assoc user 
+      (swap! last-song-cache assoc user
              {:track track :updated-at (System/currentTimeMillis)}))
     (catch Exception e
       (println "Failed to update cache for" user ":" (.getMessage e)))))
 
-(defn start-updater! 
+(defn start-updater!
   "Starts background updater for user's last song. Returns future."
   [user interval-ms]
   (future
