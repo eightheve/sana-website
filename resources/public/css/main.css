@@ -1,203 +1,216 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
-@import url('/sitelen-pona/linja-Eko.css');
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap");
+@import url("/sitelen-pona/linja-Eko.css");
 
-@import url('/css/dropdown.css');
-@import url('/css/header.css');
+@import url("/css/dropdown.css");
+@import url("/css/header.css");
 
 /* ==================== VARIABLES ==================== */
 
 :root {
-    --color-text: #e3e3e3;
-    --color-text-muted: #a3a3a3;
-    --color-background: #070707;
-    --color-background-bright: #171717;
+  --color-text: #e3e3e3;
+  --color-text-muted: #a3a3a3;
+  --color-background: #070707;
+  --color-background-bright: #171717;
 
-    --color-accent-primary-light: #3fb68f;
-    --color-accent-primary-dark:  #027c5c;
+  --color-accent-primary-light: #3fb68f;
+  --color-accent-primary-dark: #027c5c;
 
-    --color-accent-secondary-light: #eba254;
-    --color-accent-secondary-dark:  #ae783e;
+  --color-accent-secondary-light: #eba254;
+  --color-accent-secondary-dark: #ae783e;
 
-    --border-main: 6px double var(--color-text);
+  --border-main: 6px double var(--color-text);
 }
 
 /* ==================== I18N ==================== */
 
 *:lang(en) {
-    font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", monospace;
 }
 
 *:lang(tok) {
-    font-family: "linja Eko", monospace;
+  font-family: "linja Eko", monospace;
 }
 
 /* ==================== BASE ==================== */
 
 html {
-    width: 100vw;
-    height: 100vh;
-    padding: 24px 32px;
+  width: 100vw;
+  height: 100vh;
+  padding: 24px 32px;
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-    margin: 0 auto;
-    max-width: 1200px;
-    background: var(--color-background);
-    color: var(--color-text);
-    font-family: "IBM Plex Mono", monospace;
+  margin: 0 auto;
+  max-width: 1200px;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: "IBM Plex Mono", monospace;
 }
 
 /* ==================== TYPOGRAPHY ==================== */
 
-h2, h3 {
-    margin: 13px 0 5px;
+h2,
+h3 {
+  margin: 13px 0 5px;
 }
 
 p {
-    margin: 3px 0 21px;
+  margin: 3px 0 21px;
 }
 
-a:visited, a { 
-    color: var(--color-accent-primary-light);
+a:visited,
+a {
+  color: var(--color-accent-primary-light);
 }
 
-a:active, a:hover {
-    color: var(--color-accent-primary-dark); 
-    text-decoration: underline; 
+a:active,
+a:hover {
+  color: var(--color-accent-primary-dark);
+  text-decoration: underline;
 }
 
-a  { text-decoration: none; font-weight: bold; }
-hr { color: var(--color-text); }
+a {
+  text-decoration: none;
+  font-weight: bold;
+}
+hr {
+  color: var(--color-text);
+}
 
 /* ==================== CLASS UTILITIES ==================== */
 
 .border {
-    border: var(--border-main);
+  border: var(--border-main);
 }
 
 .addr-at {
-    color: var(--color-text-muted);
+  color: var(--color-text-muted);
 }
 
 .addr-at::before {
-    content: "[at]"
+  content: "[at]";
 }
 
-
 .addr-label {
-    text-align: right;
-    white-space: nowrap;
-    width: 20%;
+  text-align: right;
+  white-space: nowrap;
+  width: 20%;
 }
 
 .addr-filler {
-    position: relative;
+  position: relative;
 }
 
 .addr-filler > div {
-    position: absolute;
-    background-color: white;
-    left: 4px;
-    right: 4px;
-    top: calc(50% - 0px);
-    bottom: calc(50% - 1px);
+  position: absolute;
+  background-color: white;
+  left: 4px;
+  right: 4px;
+  top: calc(50% - 0px);
+  bottom: calc(50% - 1px);
 }
 
 .addr-content {
-    text-align: left;
-    white-space: nowrap;
-    width: 60%;
+  text-align: left;
+  white-space: nowrap;
+  width: 60%;
 }
 
 .marquee {
-    overflow: hidden;
-    white-space: nowrap;
-    position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
 }
 
 .marquee > span {
-    display: inline-block;
-    will-change: transform;
-    padding-right: 1rem;
+  display: inline-block;
+  will-change: transform;
+  padding-right: 1rem;
 }
 
 /* ==================== INDEX ==================== */
 
 #index-main {
-    display: flex;
-    flex-direction: row;
-    gap: 0;
-    align-items: flex-start;
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  align-items: flex-start;
 }
 
 #index-main > * {
-    border: var(--border-main);
-    padding: 0 8px 12px;
+  border: var(--border-main);
+  padding: 0 8px 12px;
 }
 
 #index-main > main {
-    flex-grow: 3;
-    min-width: 512px;
-    max-width: 70%
+  flex-grow: 3;
+  min-width: 512px;
+  max-width: 70%;
 }
 
 #index-main > div {
-    flex-grow: 2;
-    min-width: 300px;
+  flex-grow: 2;
+  min-width: 300px;
 }
 
 #index-main > div table {
-    width: 100%;
+  width: 100%;
 }
 
-#webrings td.prev {text-align: left;}
-#webrings td.home {text-align: center;}
-#webrings td.next {text-align: right;}
+#webrings td.prev {
+  text-align: left;
+}
+#webrings td.home {
+  text-align: center;
+}
+#webrings td.next {
+  text-align: right;
+}
 
 address p > span {
-    float: right;
+  float: right;
 }
 
 .last-song {
-    display: grid;
-    grid-template-rows: 1.5rem 1.5rem;
-    grid-template-columns: 3rem 1fr;
-    grid-template-areas:
-	"img title"
-	"img time-since";
+  display: grid;
+  grid-template-rows: 1.5rem 1.5rem;
+  grid-template-columns: 3rem 1fr;
+  grid-template-areas:
+    "img title"
+    "img time-since";
 
-    margin-top: 12px;
-    margin-bottom: 12px;
+  margin-top: 12px;
+  margin-bottom: 12px;
 }
 
 .last-song p {
-    margin: 0;
-    padding-left: 8px;
+  margin: 0;
+  padding-left: 8px;
 }
 
 .last-song p:has(span) {
-    box-shadow: 8px 0px 6px 0 var(--color-background) inset;
+  box-shadow: 8px 0px 6px 0 var(--color-background) inset;
 }
 
 .last-song p {
-    color: var(--color-text-muted);
-    font-weight: 500;
+  color: var(--color-text-muted);
+  font-weight: 500;
 }
 
 .last-song p > span > span {
-    color: var(--color-text);
-    font-weight: 500;
+  color: var(--color-text);
+  font-weight: 500;
 }
 
 .last-song img {
-    grid-area: img;
-    height: 100%;
-    width: 100%;
+  grid-area: img;
+  height: 100%;
+  width: 100%;
 
-    border-radius: 2px;
-    border: 2px solid var(--color-accent-primary-light);
+  border-radius: 2px;
+  border: 2px solid var(--color-accent-primary-light);
 }
