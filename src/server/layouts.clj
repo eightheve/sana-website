@@ -27,7 +27,7 @@
   (let [lang-kw (keyword lang)
         nav-sections [[:home-label
                        [["/index.html" :home-index]
-                        ["/about.html" :home-about]
+                        ["/about-me.html" :home-about]
                         ["/updates.html" :home-updates]]]
                       [:spaces-label
                        [["/music.html" :spaces-music]
@@ -96,6 +96,12 @@
             [:td {:lang "tok"} "ilo [soweli anpa nasa ante] li pilin pona"]]]])
 
 ;; PAGES
+(defn about-me [lang]
+  (let [ft (partial t (keyword lang))]
+    (list (page-header lang)
+          [:div {:id "about-me-main"}
+           [:h2 (ft :about-me :header)]
+           [:p (ft :about-me :body)]])))
 
 (defn index [lang]
   (let [ft (partial t (keyword lang))]

@@ -215,3 +215,14 @@ address p > span {
   border-radius: 2px;
   border: 2px solid var(--color-accent-primary-light);
 }
+
+/* ==================== ABOUT ME ==================== */
+
+#about-me-main {
+  border: var(--border-main);
+  padding: 0 8px 12px;
+}
+
+#about-me-main li {
+  margin-top: 4px;
+}

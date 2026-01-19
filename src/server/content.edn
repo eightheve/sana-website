@@ -37,4 +37,26 @@
          :meta/header {:en "META" :tok ""}
          :meta/body   {:en ("This website serves as a landing place for all things Sana, but mostly it's a playground for me to try out many things. It is currently very unfinished! But it is being worked on actively. Right now this entire website is powered by a backend written in clojure, using hiccup to generate the html, which means this site is almost entirely devoid of frontend logic, and is still able to serve dynamic content! The source code for this website can be found "
                             [:a {:target "_blank" :href "https://github.com/eightheve/sana-website"} "here"]
-                            ", along with the flake I use to package it for my server.") :tok ""}}}
+                            ", along with the flake I use to package it for my server.") :tok ""}}
+
+ :about-me {:header {:en "ABOUT SANA"}
+            :body {:en ("Hello! My name is Sana, but you probably already knew that. You should refer to me using it/is pronouns, they/them and she/her are also acceptable, but please try your hardest to avoid their use. I speak english and toki pona, and am one of the maintainers on the bucket webring. I am currently in Rhode Island, USA and have been living here since late 2024, but I was born and grew up in Oregon."
+                        [:br] [:br]
+                        "The programming languages that I know, in order from most comfortability and competence to least, are as follows:"
+                        [:ul
+                         [:li "Clojure (Backends and RESTful APIs)"]
+                         [:li "Nix (NixOS and Flakes, see my config " [:a {:href "https://github.com/eightheve/nixos"} "here"] ")"]
+                         [:li "Bash"]
+                         [:li "JavaScript (Frontends)"]
+                         [:li "Scheme"]
+                         [:li "Python"]]
+                        "Some of my interests, in no particular order, are as follows:"
+                        [:ul
+                         [:li "Music" [:ul
+                                       [:li "Emo"]
+                                       [:li "Screamo"]
+                                       [:li "Post-Rock"]
+                                       [:li "Ambient"]]]
+                         [:li "Linux (NixOS)"]
+                         [:li "Homelabbing " [:a {:href "/en/servers.html"} "(see my home servers)"]]
+                         [:li "Baikal Seals"]])}}}
