@@ -129,7 +129,6 @@
               StateDirectory = cfg.serviceName;
             };
           };
-          environment.systemPackages = [pkgs.clojure];
         };
       };
     };
