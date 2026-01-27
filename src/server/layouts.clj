@@ -30,7 +30,8 @@
                         ["/about-me.html" :home-about]
                         ["/updates.html" :home-updates]]]
                       [:spaces-label
-                       [["/music.html" :spaces-music]
+                       [["/homelab.html" :spaces-homelab]
+                        ["/music.html" :spaces-music]
                         ["/nixos.html" :spaces-nixos]]]
                       [:other-label
                        [["/album-map.html" :other-album_map]

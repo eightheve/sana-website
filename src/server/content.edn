@@ -7,6 +7,7 @@
           :home-updates {:en "UPDATES" :tok "ijo sin"}
 
           :spaces-label {:en "SPACES" :tok "ma pi ijo mute"}
+          :spaces-homelab {:en "HOMELAB" :tok "ilo pi tomo ilo [nasa ilo ken olin]"}
           :spaces-music {:en "MUSIC REVIEW" :tok "ma pi kalama musi"}
           :spaces-nixos {:en "NIXOS" :tok "ma pi ilo [nasa ilo ken olin]"}
 
