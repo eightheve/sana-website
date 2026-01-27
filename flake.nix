@@ -6,125 +6,130 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
+  outputs = {
+    self,
+    nixpkgs,
+    flake-utils,
+  }:
+    flake-utils.lib.eachDefaultSystem (
+      system: let
         pkgs = nixpkgs.legacyPackages.${system};
-      in
-      {
+      in {
         packages.default = pkgs.stdenv.mkDerivation {
           pname = "sana-website";
           version = "0.1.0";
           src = ./.;
 
-          nativeBuildInputs = [ ];
+          nativeBuildInputs = [];
         };
       }
-    ) // {
-      nixosModules.default = { config, lib, pkgs, ... }:
-        let
-          cfg = config.services.sana-moe;
-        in
-        {
-          options.services.sana-moe = {
-            enable = lib.mkEnableOption "sana website and backend";
+    )
+    // {
+      nixosModules.default = {
+        config,
+        lib,
+        pkgs,
+        ...
+      }: let
+        cfg = config.services.sana-moe;
+      in {
+        options.services.sana-moe = {
+          enable = lib.mkEnableOption "sana website and backend";
 
-            serviceName = lib.mkOption {
-              type = lib.types.str;
-              default = "sana-doppel-moe";
-              description = "Default name for service, user, and directories";
-            };
-
-            domain = lib.mkOption {
-              type = lib.types.str;
-              default = "doppel.moe";
-              description = "Base domain";
-            };
-
-            user = lib.mkOption {
-              type = lib.types.str;
-              default = "${cfg.serviceName}-user";
-              description = "User to run services as";
-            };
-
-            subDomain = lib.mkOption {
-              type = lib.types.str;
-              default = "sana";
-              description = "Subdomain label";
-            };
-
-            stateDir = lib.mkOption {
-              type = lib.types.path;
-              default = "/var/lib/${cfg.serviceName}";
-              description = "State directory for database and persistent data";
-            };
-
-            envFile = lib.mkOption {
-              type = lib.types.path;
-              description = "Path to environment file containing API keys";
-            };
-
-            localPort = lib.mkOption {
-              type = lib.types.int;
-              default = 3200;
-              description = "The port for the local backend to run on";
-            };
+          serviceName = lib.mkOption {
+            type = lib.types.str;
+            default = "sana-doppel-moe";
+            description = "Default name for service, user, and directories";
           };
 
-          config = lib.mkIf cfg.enable {
-            users.users.${cfg.user} = {
-              isSystemUser = true;
-              group = "users";
-              home = cfg.stateDir;
-              createHome = true;
-            };
+          domain = lib.mkOption {
+            type = lib.types.str;
+            default = "doppel.moe";
+            description = "Base domain";
+          };
 
-            services.nginx = {
-              enable = true;
-              virtualHosts = {
-                "${cfg.subDomain}.${cfg.domain}" = {
-                  forceSSL = true;
-                  enableACME = true;
-                  locations."/" = {
-                    proxyPass = "http://localhost:${toString cfg.localPort}/";
-                    proxyWebsockets = true;
-                    extraConfig = ''
-                      proxy_set_header X-Real-IP $remote_addr;
-                      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                      proxy_set_header X-Forwarded-Proto $scheme;
-                      
-                      add_header 'Access-Control-Allow-Origin' 'https://${cfg.subDomain}.${cfg.domain}' always;
-                      add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS, POST, PUT, DELETE' always;
-                      add_header 'Access-Control-Allow-Headers' 'Content-Type' always;
-                    '';
-                  };
+          user = lib.mkOption {
+            type = lib.types.str;
+            default = "${cfg.serviceName}-user";
+            description = "User to run services as";
+          };
+
+          subDomain = lib.mkOption {
+            type = lib.types.str;
+            default = "sana";
+            description = "Subdomain label";
+          };
+
+          stateDir = lib.mkOption {
+            type = lib.types.path;
+            default = "/var/lib/${cfg.serviceName}";
+            description = "State directory for database and persistent data";
+          };
+
+          envFile = lib.mkOption {
+            type = lib.types.path;
+            description = "Path to environment file containing API keys";
+          };
+
+          localPort = lib.mkOption {
+            type = lib.types.int;
+            default = 3200;
+            description = "The port for the local backend to run on";
+          };
+        };
+
+        config = lib.mkIf cfg.enable {
+          users.users.${cfg.user} = {
+            isSystemUser = true;
+            group = "users";
+            home = cfg.stateDir;
+            createHome = true;
+          };
+
+          services.nginx = {
+            enable = true;
+            virtualHosts = {
+              "${cfg.subDomain}.${cfg.domain}" = {
+                forceSSL = true;
+                enableACME = true;
+                locations."/" = {
+                  proxyPass = "http://localhost:${toString cfg.localPort}/";
+                  proxyWebsockets = true;
+                  extraConfig = ''
+                    proxy_set_header X-Real-IP $remote_addr;
+                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_set_header X-Forwarded-Proto $scheme;
+
+                    add_header 'Access-Control-Allow-Origin' 'https://${cfg.subDomain}.${cfg.domain}' always;
+                    add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS, POST, PUT, DELETE' always;
+                    add_header 'Access-Control-Allow-Headers' 'Content-Type' always;
+                  '';
                 };
               };
             };
+          };
 
-            systemd.services."${cfg.serviceName}" = {
-              wantedBy = [ "multi-user.target" ];
-              after = [ "network.target" ];
-              description = "Backend for ${cfg.user}.${cfg.domain}";
-              
-              serviceConfig = {
-                Type = "simple";
-                User = cfg.user;
-                WorkingDirectory = "${self}";
-                EnvironmentFile = cfg.envFile;
-                Environment = [
-                  "DB_PATH=${cfg.stateDir}/similar-songs.db"
-                  "PORT=${toString cfg.localPort}"
-                ];
-                ExecStart = "${pkgs.clojure}/bin/clojure -M:run";
-                Restart = "on-failure";
-                RestartSec = "10";
-                StateDirectory = cfg.serviceName;
-              };
+          systemd.services."${cfg.serviceName}" = {
+            wantedBy = ["multi-user.target"];
+            after = ["network.target"];
+            description = "Backend for ${cfg.user}.${cfg.domain}";
+
+            serviceConfig = {
+              Type = "simple";
+              User = cfg.user;
+              WorkingDirectory = "${self}";
+              EnvironmentFile = cfg.envFile;
+              Environment = [
+                "DB_PATH=${cfg.stateDir}/similar-songs.db"
+                "PORT=${toString cfg.localPort}"
+              ];
+              ExecStart = "${pkgs.clojure}/bin/clojure -M:run";
+              Restart = "on-failure";
+              RestartSec = "10";
+              StateDirectory = cfg.serviceName;
             };
-            environment.systemPackages = [ pkgs.clojure ];
           };
         };
+      };
     };
 }
-
