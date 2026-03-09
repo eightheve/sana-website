@@ -1,19 +1,26 @@
 {:title {:en "Sana's Homepage"
          :tok "tomo pi ilo Sana"}
 
- :header {:home-label {:en "HOME" :tok "tomo mi"}
-          :home-index {:en "HOMEPAGE" :tok "lipu pi tomo mi"}
-          :home-about {:en "ABOUT ME" :tok "lipu sona mi"}
-          :home-updates {:en "UPDATES" :tok "ijo sin"}
+ :header {:index {:label {:en "Home"}
+                  :path "/"
+                  :subpages []}
 
-          :spaces-label {:en "SPACES" :tok "ma pi ijo mute"}
-          :spaces-homelab {:en "HOMELAB" :tok "ilo pi tomo ilo [nasa ilo ken olin]"}
-          :spaces-music {:en "MUSIC REVIEW" :tok "ma pi kalama musi"}
-          :spaces-nixos {:en "NIXOS" :tok "ma pi ilo [nasa ilo ken olin]"}
+          :about-me {:label {:en "About Sana"}
+                     :path "/about-me/"
+                     :subpages []}
 
-          :other-label {:en "OTHER" :tok "ale"}
-          :other-album_map {:en "ALBUM MAP" :tok "ma li kalama musi kulupu"}
-          :other-chatroom {:en "CHATROOM" :tok "tomo toki"}}
+          :blog {:label {:en "!Blog!"}
+                 :path "/blog/"
+                 :subpages []}
+
+          :spaces {:label {:en "!Spaces!"}
+                   :path "/spaces/"
+                   :subpages {:spaces/album-review {:label {:en "Album Review"}
+                                                    :path "/spaces/album-review/"}
+                              :spaces/nixos {:label {:en "NixOS"}
+                                             :path "/spaces/nixos/"}
+                              :spaces/updates {:label {:en "Updates"}
+                                               :path "/space/updates/"}}}}
 
  :sidebar {:webring-header {:en "WEBRINGS" :tok "nasin tawa sike pi kulupu lipu"}
            :visit-counter {:en "VISIT COUNTER" :tok "nanpa pi jan lon ni"}

@@ -17,7 +17,7 @@
 
 (defn head [lang]
   [:head
-   (layouts/title (keyword lang))
+   (layouts/title lang)
    [:meta {:charset "UTF-8"}]
    [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
    [:link {:href "/css/main.css" :rel "stylesheet"}]
@@ -27,13 +27,13 @@
    [:script {:src "/js/script.js"}]
    [:script "let FF_FOUC_FIX;"]])
 
-(defn page [lang content]
+(defn page [lang content-key]
   {:status 200
    :headers {"Content-Type" "text/html; charset=utf-8"}
    :body (str (h/html (h/raw "<!DOCTYPE html>")
                       [:html {:lang lang}
                        (head lang)
-                       [:body content]]))})
+                       [:body (layouts/make-body lang content-key)]]))})
 
 (def valid-langs #{"en" "tok"})
 
@@ -47,13 +47,14 @@
 (defroutes app
   (GET "/" [] (redirect "/en/"))
   (GET "/index.html" [] (redirect "/en/"))
+  (GET "/index/" [] (redirect "/en/"))
 
   (context "/:lang" [lang]
     (wrap-valid-lang
      (routes
-      (GET "/" [] (page (keyword lang) (layouts/index lang)))
-      (GET "/index.html" [] (page (keyword lang) (layouts/index lang)))))
-    (GET "/about-me.html" [] (page (keyword lang) (layouts/about-me lang))))
+      (GET "/" []          (page (keyword lang) :index))
+      (GET "/about-me/" [] (page (keyword lang) :about-me))
+      (GET "/spaces/" []   (page (keyword lang) :spaces)))))
 
   (route/resources "/")
   (route/not-found "404"))
