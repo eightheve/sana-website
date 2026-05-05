@@ -1,8 +1,28 @@
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap");
-@import url("/sitelen-pona/linja-Eko.css");
+/*@import url("/sitelen-pona/linja-Eko.css");*/
 
-@import url("/css/contacts.css");
-@import url("/css/header.css");
+/* ==================== FONTS ==================== */
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/-F63fjptAgt5VM-kVkqdyU8n5ig.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/-F6qfjptAgt5VM-kVkqdyU8n3pQP8lc.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/-F6sfjptAgt5VM-kVkqdyU8n1ioSflVFhw.ttf') format('truetype');
+}
 
 /* ==================== VARIABLES ==================== */
 
@@ -26,9 +46,9 @@
   font-family: "IBM Plex Mono", monospace;
 }
 
-*:lang(tok) {
+/**:lang(tok) {
   font-family: "linja Eko", monospace;
-}
+}*/
 
 /* ==================== BASE ==================== */
 
@@ -95,3 +115,140 @@ a {
 
 .blog-post h2 { margin-bottom: 4px }
 .blog-post h4 { margin-top: 4px; margin-bottom: 0 }
+
+/* ================================================= */
+/* ==================== HEADER  ==================== */
+/* ================================================= */
+
+
+header {
+  width: 100%;
+}
+
+header .site-title {
+  height: 64px;
+  background-color: var(--accent-0);
+  color: var(--accent-3);
+}
+
+header h1 {
+  margin: 0;
+  padding-top: 12px;
+}
+.site-title > section { position: relative; }
+.site-title div.hit-counter {
+  position: absolute;
+  top: 4px;
+  right: 0px;
+  height: 100px;
+  filter: drop-shadow(3px 1px var(--accent-3));
+  display: flex;
+  gap: 5px;
+}
+.site-title div.hit-counter > div {
+  width: 45px;
+  height: 100px;
+  background-image: url('/img/counter-sprites.gif');
+}
+
+@media screen and (max-width: 620px) {
+  .site-title div.hit-counter {
+    display: none;
+  }
+}
+
+.navbar {
+  width: 100%;
+  background-color: var(--navbar-bg);
+  color: var(--navbar-text);
+}
+
+.navbar ul {
+  display: table;
+  width: 100%;
+  padding: 0;
+}
+
+.navbar a,
+.navbar a:visited {
+  color: var(--navbar-text);
+}
+.navbar a:hover,
+.navbar a:active {
+  text-decoration: none;
+  background-color: var(--navbar-hover);
+  color: var(--navbar-text);
+}
+
+.navbar a.current {
+  background-color: var(--navbar-current);
+}
+
+.navbar a {
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: calc(var(--height)/2 - 10.5px);
+  padding-bottom: calc(var(--height)/2 - 10.5px);
+  height: var(--height);
+  display: block;
+  font-weight: normal;
+}
+
+.navbar li {
+  float: left;
+  display: block;
+  padding: 0;
+  margin: 0;
+}
+
+.main-navigation {
+  --navbar-bg: var(--accent-2);
+  --navbar-text: var(--shade-00);
+  --navbar-hover: var(--accent-3);
+  --navbar-current: var(--accent-1);
+  --height: 3rem;
+}
+
+.subpage-navigation {
+  --navbar-bg: var(--shade-01);
+  --navbar-text: var(--shade-11);
+  --navbar-hover: var(--shade-10);
+  --navbar-current: var(--shade-00);
+  --height: 2.5rem;
+}
+
+/* =================================================== */
+/* ==================== CONTACTS  ==================== */
+/* =================================================== */
+
+
+table td.label::before {
+  content: "";
+  position: absolute;
+  background-color: var(--shade-10);
+  left: 12px;
+  right: 4px;
+  top: calc(50% - 0px);
+  bottom: calc(50% - 1px);
+  z-index: -1;
+}
+
+table td.label { 
+  width: 40%;
+  position: relative;
+}
+
+table td.label span {
+  background-color: var(--shade-00);
+  padding-right: 8px;
+}
+
+table td.address { width: 60% }
+
+span.at::before {
+  content: "[at]";
+}
+
+span.at {
+  color: var(--accent-2);
+}

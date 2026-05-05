@@ -4,6 +4,7 @@
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.util.response :refer [redirect]]
             [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.gzip :refer [wrap-gzip]]
             [hiccup2.core :as h]
 
             [server.lastfm :as lastfm]
@@ -30,7 +31,8 @@
 
 (defn page [content-key request]
   {:status 200
-   :headers {"Content-Type" "text/html; charset=utf-8"}
+   :headers {"Content-Type" "text/html; charset=utf-8"
+             "Cache-Control" "no-cache"}
    :body (str (h/html (h/raw "<!DOCTYPE html>")
                       [:html {:lang "en"}
                        (head)
@@ -53,6 +55,14 @@
         {:status 401
          :headers {"Content-Type" "text/plain"}
          :body "Unauthorized"}))))
+
+(defn wrap-cache-static [handler max-age]
+  (fn [request]
+    (let [response (handler request)]
+      (if (and response (= (:status response) 200))
+        (assoc-in response [:headers "Cache-Control"]
+                  (str "public, max-age=" max-age))
+        response))))
 
 (defroutes auth-api-routes
   (POST "/blog" req
@@ -111,12 +121,12 @@
 
   (routes (context "/api/auth" [] (wrap-auth auth-api-routes)))
 
-  (route/resources "/")
+  (wrap-cache-static (route/resources "/") 86400)
   (route/not-found (page :404 nil)))
 
 (defn start-server []
   (reset! server
-          (run-jetty (wrap-params #'app) {:port (port) :join? false})))
+          (run-jetty (wrap-gzip (wrap-params #'app)) {:port (port) :join? false})))
 
 (defn stop-server []
   (when @server
