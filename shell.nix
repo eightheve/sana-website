@@ -29,6 +29,7 @@ pkgs.mkShell {
     clojure
     dtlv
     clojure-lsp
+    vim
   ];
 
   shellHook = ''

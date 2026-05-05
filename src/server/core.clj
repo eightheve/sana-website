@@ -1,12 +1,15 @@
 (ns server.core
-  (:require [compojure.core :refer [defroutes GET routes context]]
+  (:require [compojure.core :refer [defroutes GET POST routes context]]
             [compojure.route :as route]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.util.response :refer [redirect]]
+            [ring.middleware.params :refer [wrap-params]]
             [hiccup2.core :as h]
 
             [server.lastfm :as lastfm]
-            [server.layouts :as layouts]))
+            [server.layouts :as layouts]
+            [server.blog :as blog]
+            [server.guestbook :as guestbook]))
 
 (defonce server (atom nil))
 
@@ -15,53 +18,105 @@
               Integer/parseInt)
       45000))
 
-(defn head [lang]
+(defn head []
   [:head
-   (layouts/title lang)
+   [:title "Sana's Homepage"]
    [:meta {:charset "UTF-8"}]
    [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
    [:link {:href "/css/main.css" :rel "stylesheet"}]
-   [:link {:href "/nf/nerd-fonts-generated.css" :rel "stylesheet"}]
    [:link
     {:href "/img/favicon-64x64.png" :rel "icon" :type "image/png" :sizes "64x64"}]
-   [:script {:src "/js/script.js"}]
    [:script "let FF_FOUC_FIX;"]])
 
-(defn page [lang content-key]
+(defn page [content-key request]
   {:status 200
    :headers {"Content-Type" "text/html; charset=utf-8"}
    :body (str (h/html (h/raw "<!DOCTYPE html>")
-                      [:html {:lang lang}
-                       (head lang)
-                       [:body (layouts/make-body lang content-key)]]))})
+                      [:html {:lang "en"}
+                       (head)
+                       [:body (layouts/make-body content-key request)]]))})
 
-(def valid-langs #{"en" "tok"})
+(defn gen-token []
+  (apply str (repeatedly 16 #(rand-nth "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))))
 
-(defn wrap-valid-lang [handler]
+(defonce api-token
+  (or (System/getenv "SANA_API_TOKEN")
+      (let [token (gen-token)]
+        (println "Generated API token:" token)
+        token)))
+
+(defn wrap-auth [handler]
   (fn [request]
-    (let [lang (get-in request [:params :lang])]
-      (if (valid-langs lang)
+    (let [auth-header (get-in request [:headers "authorization"])]
+      (if (= auth-header (str "Bearer " api-token))
         (handler request)
-        nil))))
+        {:status 401
+         :headers {"Content-Type" "text/plain"}
+         :body "Unauthorized"}))))
+
+(defroutes auth-api-routes
+  (POST "/blog" req
+    (let [params (:form-params req)
+          title  (get params "title")
+          body   (get params "body")]
+      (if (and title body)
+        (do (blog/add-post title body)
+            {:status 201
+             :headers {"Content-Type" "text/plain"}
+             :body "Created"})
+        {:status 400
+         :headers {"Content-Type" "text/plain"}
+         :body "Missing title or body"}))))
 
 (defroutes app
-  (GET "/" [] (redirect "/en/"))
-  (GET "/index.html" [] (redirect "/en/"))
-  (GET "/index/" [] (redirect "/en/"))
+  (GET "/index.html" req (redirect "/"))
+  (GET "/index" req (redirect "/"))
 
-  (context "/:lang" [lang]
-    (wrap-valid-lang
-     (routes
-      (GET "/" []          (page (keyword lang) :index))
-      (GET "/about-me/" [] (page (keyword lang) :about-me))
-      (GET "/spaces/" []   (page (keyword lang) :spaces)))))
+  (GET "/" req          (page :index req))
+  (GET "/sana/" req     (page :sana req))
+  (GET "/blog/" req     (page :blog req))
+  (GET "/spaces/" req   (page :spaces req))
+
+  (GET "/spaces/fiction/" req   (page :spaces/fiction req))
+  (GET "/spaces/webrings/" req  (page :spaces/webrings req))
+  (GET "/spaces/guestbook/" req (page :spaces/guestbook req))
+  (POST "/spaces/guestbook/" req
+    (let [content-length (some-> (get-in req [:headers "content-length"])
+                                 Integer/parseInt)
+          params  (:form-params req)
+          username (get params "username")
+          body    (get params "body")
+          ip      (or (get-in req [:headers "x-real-ip"])
+                      (get-in req [:headers "x-forwarded-for"])
+                      (:remote-addr req))]
+      (cond
+        (and content-length (> content-length 4096))
+        {:status 413
+         :headers {"Content-Type" "text/plain"}
+         :body "Payload too large"}
+        (not (guestbook/can-post? ip))
+        {:status 429
+         :headers {"Content-Type" "text/plain"}
+         :body "Too many requests"}
+        (not (and username body))
+        {:status 400
+         :headers {"Content-Type" "text/plain"}
+         :body "Missing username or body"}
+        :else
+        (do (guestbook/add-comment username body ip
+                                   :email    (get params "email")
+                                   :homepage (get params "homepage"))
+            (redirect "/spaces/guestbook/")))))
+  (GET "/spaces/updates/" req   (page :spaces/updates req))
+
+  (routes (context "/api/auth" [] (wrap-auth auth-api-routes)))
 
   (route/resources "/")
-  (route/not-found "404"))
+  (route/not-found (page :404 nil)))
 
 (defn start-server []
   (reset! server
-          (run-jetty #'app {:port (port) :join? false})))
+          (run-jetty (wrap-params #'app) {:port (port) :join? false})))
 
 (defn stop-server []
   (when @server

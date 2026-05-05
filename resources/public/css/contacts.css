@@ -1,0 +1,30 @@
+table td.label::before {
+  content: "";
+  position: absolute;
+  background-color: var(--shade-10);
+  left: 12px;
+  right: 4px;
+  top: calc(50% - 0px);
+  bottom: calc(50% - 1px);
+  z-index: -1;
+}
+
+table td.label { 
+  width: 40%;
+  position: relative;
+}
+
+table td.label span {
+  background-color: var(--shade-00);
+  padding-right: 8px;
+}
+
+table td.address { width: 60% }
+
+span.at::before {
+  content: "[at]";
+}
+
+span.at {
+  color: var(--accent-2);
+}

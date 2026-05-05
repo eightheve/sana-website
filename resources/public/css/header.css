@@ -4,13 +4,46 @@ header {
 
 header .site-title {
   height: 64px;
+  background-color: var(--accent-0);
+  color: var(--accent-3);
+}
+
+header h1 {
+  margin: 0;
+  padding-top: 12px;
+}
+.site-title > section { position: relative; }
+.site-title div.hit-counter {
+  position: absolute;
+  top: 4px;
+  right: 0px;
+  height: 100px;
+  filter: drop-shadow(3px 1px var(--accent-3));
+  display: flex;
+  gap: 5px;
+}
+.site-title div.hit-counter > div {
+  width: 45px;
+  height: 100px;
+  background-image: url('/img/counter-sprites.gif');
+}
+
+@media screen and (max-width: 620px) {
+  .site-title div.hit-counter {
+    display: none;
+  }
+}
+
+.navbar {
+  width: 100%;
+  background-color: var(--navbar-bg);
+  color: var(--navbar-text);
 }
 
 .navbar ul {
   display: table;
   width: 100%;
-  background-color: var(--navbar-bg);
-  color: var(--navbar-text);
+  padding: 0;
 }
 
 .navbar a,
@@ -24,9 +57,18 @@ header .site-title {
   color: var(--navbar-text);
 }
 
+.navbar a.current {
+  background-color: var(--navbar-current);
+}
+
 .navbar a {
-  padding: 12px 16px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: calc(var(--height)/2 - 10.5px);
+  padding-bottom: calc(var(--height)/2 - 10.5px);
+  height: var(--height);
   display: block;
+  font-weight: normal;
 }
 
 .navbar li {
@@ -37,13 +79,17 @@ header .site-title {
 }
 
 .main-navigation {
-  --navbar-bg: var(--accent-1);
-  --navbar-text: var(--shade-11);
-  --navbar-hover: var(--accent-2);
+  --navbar-bg: var(--accent-2);
+  --navbar-text: var(--shade-00);
+  --navbar-hover: var(--accent-3);
+  --navbar-current: var(--accent-1);
+  --height: 3rem;
 }
 
 .subpage-navigation {
   --navbar-bg: var(--shade-01);
   --navbar-text: var(--shade-11);
-  --navbar-hover: var(--shade-00);
+  --navbar-hover: var(--shade-10);
+  --navbar-current: var(--shade-00);
+  --height: 2.5rem;
 }

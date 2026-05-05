@@ -1,70 +1,70 @@
-{:title {:en "Sana's Homepage"
-         :tok "tomo pi ilo Sana"}
+{:title "Sana's Homepage"
 
- :header {:index {:label {:en "Home"}
+ :header {:index {:label "Home"
                   :path "/"
                   :subpages []}
 
-          :about-me {:label {:en "About Sana"}
-                     :path "/about-me/"
+          :sana {:label "Sana"
+                     :path "/sana/"
                      :subpages []}
 
-          :blog {:label {:en "!Blog!"}
+          :blog {:label "Blog"
                  :path "/blog/"
                  :subpages []}
 
-          :spaces {:label {:en "!Spaces!"}
+          :spaces {:label "Spaces"
                    :path "/spaces/"
-                   :subpages {:spaces/album-review {:label {:en "Album Review"}
-                                                    :path "/spaces/album-review/"}
-                              :spaces/nixos {:label {:en "NixOS"}
-                                             :path "/spaces/nixos/"}
-                              :spaces/updates {:label {:en "Updates"}
-                                               :path "/space/updates/"}}}}
+                   :subpages {:spaces/fiction {:label "Fiction"
+                                               :path "/spaces/fiction/"}
+                              :spaces/webrings {:label "Webrings"
+                                                :path "/spaces/webrings/"}
+                              :spaces/guestbook {:label "Guestbook"
+                                                 :path "/spaces/guestbook/"}
+                              :spaces/updates {:label "Updates"
+                                               :path "/spaces/updates/"}}}}
 
- :sidebar {:webring-header {:en "WEBRINGS" :tok "nasin tawa sike pi kulupu lipu"}
-           :visit-counter {:en "VISIT COUNTER" :tok "nanpa pi jan lon ni"}
-           :contact {:en "CONTACT ME" :tok "o toki mi kepeken nasin ni"}
-           :status-header {:en "CURRENT STATUS" :tok "tenpo ni la ilo [soweli anpa nasa ante] li seme"}}
-
- :status {:mood {:en "Mood:" :tok "pilin:"}}
-
- :index {:introduction/header {:en "INTRODUCTION" :tok "toki pi kama pona"}
-         :introduction/body   {:en ("Welcome! I'm Sana (or Matty) and you're on my website! I'm happy to have you here, and I hope you'll stay to take a look around. More information about me can be found " [:a {:href "/en/about-me.html"} "here!"])
-                               :tok ""}
-
-         :pgp/header {:en "PGP INFO"
-                      :tok ""}
-         :pgp/body   {:en ("You can find my PGP public key (which is also linked above) at "
-                           [:a {:target "_blank" :href "/key.asc"} "https://sana.doppel.moe/key.asc. "]
-                           "This key is relatively new to me, so don't be too alarmed if something from me is not signed by this key! Going forward though this site will serve as the central point for my online identity, any online accounts which appear to be me but are not listed or referenced on this site are not verifiably me unless confirmed by one of the listed contacts OR verified through PGP signing."
-                           [:br] [:br]
-                           "You can also use this public key to send me encrypted files via email or discord if you, for whatever reason, do not trust communication via these channels on their own merit. If you want more information about OpenPGP and PGP standards go "
-                           [:a {:href "https://www.openpgp.org/" :target "_blank"} "here."]) :tok ""}
-
-         :meta/header {:en "META" :tok ""}
-         :meta/body   {:en ("This website serves as a landing place for all things Sana, but mostly it's a playground for me to try out many things. It is currently very unfinished! But it is being worked on actively. Right now this entire website is powered by a backend written in clojure, using hiccup to generate the html, which means this site is almost entirely devoid of frontend logic, and is still able to serve dynamic content! The source code for this website can be found "
-                            [:a {:target "_blank" :href "https://github.com/eightheve/sana-website"} "here"]
-                            ", along with the flake I use to package it for my server.") :tok ""}}
-
- :about-me {:header {:en "ABOUT SANA"}
-            :body {:en ("Hello! My name is Sana, but you probably already knew that. You should refer to me using it/is pronouns, they/them and she/her are also acceptable, but please try your hardest to avoid their use. I speak english and toki pona, and am one of the maintainers on the bucket webring. I am currently in Rhode Island, USA and have been living here since late 2024, but I was born and grew up in Oregon."
+ :index {:intro {:body ("Welcome! I'm Sana and you're on my website :) I'm happy to have you here and I hope you'll stay to take a look around. A little more information about me can be found "
+                        [:a {:href "/sana/"} "here!"]
                         [:br] [:br]
-                        "The programming languages that I know, in order from most comfortability and competence to least, are as follows:"
-                        [:ul
-                         [:li "Clojure (Backends and RESTful APIs)"]
-                         [:li "Nix (NixOS and Flakes, see my config " [:a {:href "https://github.com/eightheve/nixos"} "here"] ")"]
-                         [:li "Bash"]
-                         [:li "JavaScript (Frontends)"]
-                         [:li "Scheme"]
-                         [:li "Python"]]
-                        "Some of my interests, in no particular order, are as follows:"
-                        [:ul
-                         [:li "Music" [:ul
-                                       [:li "Emo"]
-                                       [:li "Screamo"]
-                                       [:li "Post-Rock"]
-                                       [:li "Ambient"]]]
-                         [:li "Linux (NixOS)"]
-                         [:li "Homelabbing " [:a {:href "/en/servers.html"} "(see my home servers)"]]
-                         [:li "Baikal Seals"]])}}}
+                        "If you're here about my fiction project, "
+                        [:i "In The Shallows"]
+                        ": thank you! You can navigate over to "
+                        [:a {:href "/spaces/fiction/"} "this page"]
+                        " for the main hub. While you're here though, I'd like to clarify a few things. Right now I do not plan on releasing this as a full length, typical chapter book. This will likely only be distributed online, and I do not plan on writing a huge sci-fi epic. What you can expect from me is something more along the lines of a series of short stories that will (usually) follow the same characters. Like an episodic drama written as a webnovel instead of a TV show.")}
+  
+        :meta {:header "ABOUT THIS WEBSITE"
+               :body ("This website is written in Clojure, using Hiccup to render the HTML. There may be a minimal amount of JavaScript used for some visual flair, but I've done my best to make this website completely functional without JS, and hopefully even from text-based browsers."
+                      [:br] [:br]
+                      "Please tell me if you run into trouble with this website, and I will take your concerns into consideration! I want this website to be as accessible as possible.")}
+
+        :pgp {:header "PGP INFORMATION"
+              :body ("My PGP public key (64E2 D72F F5BA 8BEE 12C1 6A3D 5709 6169 F7C8 117C) can be found at "
+                     [:a {:target "_blank" :href "/key.asc"} "https://sana.doppel.moe/key.asc"]
+                     ". This key is owned solely by me, anybody claiming to be me who cannot produce a valid signature from this key should not be trusted."
+                     [:br] [:br]
+                     "If you're worried about communication privacy, you can use this key to send me encrypted messages via email. My Matrix account (which can be found on the 'Sana' page) also supports end-to-end encryption and is a safe way to contact me."
+                     [:br] [:br] 
+                     "Don't know what any of this means? There's more information over at "
+                     [:a {:target "_blank" :href "https://www.openpgp.org"} "openpgp.org"]
+                     ".")}}
+
+ :about-me {:intro {:body ("Hello! My name is Sana (or Matty). You should refer to me using it/its, but they/them and she/her are also acceptable sparingly. I speak english and toki pona. I live in Rhode Island, USA and love it here. I am not in school, so don't ask.")}
+            :hobbies {:header "HOBBIES"
+                      :body ("I am an avid writer, both of prose and code. This website was hand-written entirely in Clojure, a modern and functional LISP written for the JVM. I am also actively working on a sci-fi fiction project, more information available elsewhere on this website."
+                             [:br] [:br]
+                             "I listen to a ton of music, right now some of my favourite bands and artists are: Kikuo, Boards of Canada, TTNG, Karate, Aphex Twin, The Civil War in France, Girlfriends, Calendar Year, That Same Street, American Football, Ween, Bladee, The Anniversary, Crying, Lightning Bolt, LCD Soundsystem, The Sawtooth Grin, Arcade Fire, Gingerbee, Emperor X, Four Tet, Panopticon, and Slime Girls. I listen to many more artists than just these, but these are the ones I could think of right now."
+                             [:br] [:br]
+                             "I also play a lot of videogames, lately it has mostly been Fractal Block World, Stormworks, and Kerbal Space Program. Add me on Steam if you want, my friend code is 392266209")}
+            :contact {:header "CONTACT ME"}}
+
+ :spaces/fiction {:intro {:body ("This is the hub of information regarding all my present and future writing! There's not much here right now, but there will be more soon I hope. Thank you for coming by.")}
+                  :shallows {:header "In The Shallows"
+                             :body ([:i "In The Shallows"]
+                                    " is a collection of works set long after the collapse of the grand Second Federation. Humanity conquered the stars but a fractured culture, strained infrastructure, and terrible tragedy has turned a unified galactic project into a collection of isolated worlds."
+                                    [:br] [:br]
+                                    "There's nothing to read here yet, but soon I will gradually start rolling out chapters. I have an email list which you can sign up for by getting in contact with me directly, or by leaving a comment in "
+                                    [:a {:href "/spaces/guestbook"} "the guestbook"]
+                                    " asking to be added. I'll send out emails before chapters are released for beta readings, and I'll send emails when final drafts are published. I promise not to spam you!")}}
+
+ :contacts [{:label "Matrix" :id ([:span {:class "at"}] "sana:doppel.moe")}
+            {:label "Email" :id ("sana" [:span {:class "at"}] "doppel.moe")}]}
