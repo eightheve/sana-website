@@ -14,17 +14,18 @@
       (< minutes 1)     {:type :just-now}
       (< minutes 60)    {:type :minutes-ago :amount minutes}
       (< hours 24)      {:type :hours-ago :amount hours}
-      (< hours 96)      {:type :days-ago :amount hours}
+      (< hours 96)      {:type :days-ago :amount (quot hours 24)}
       :else             {:type :absolute :instant past})))
 
 (defn fuzzy-time-since [utc]
   (let [result (largest-utc-diff
                 (java.time.Instant/ofEpochSecond
-                 (Long/parseLong utc)))]
+                 (Long/parseLong utc)))
+        amount (:amount result)]
     (case (:type result)
       :just-now     "Just now"
-      :minutes-ago  (str (:amount result) " minutes ago")
-      :hours-ago    (str (:amount result) " hours ago")
-      :days-ago     (str (:amount result) " days ago")
+      :minutes-ago  (str amount (if (> amount 1) " minutes ago" " minute ago"))
+      :hours-ago    (str amount (if (> amount 1) " hours ago" " hour ago"))
+      :days-ago     (str amount (if (> amount 1) " days ago" " day ago"))
       :absolute     (let [zdt (ZonedDateTime/ofInstant (:instant result) ZoneOffset/UTC)]
-                      (.format zdt (DateTimeFormatter/ofPattern "MMMM, yyyy"))))))
+                      (.format zdt (DateTimeFormatter/ofPattern "d MMMM, yyyy"))))))
