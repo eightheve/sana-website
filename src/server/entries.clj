@@ -21,7 +21,7 @@
 
 (defn get-entries [type]
   (ensure-type-loaded type)
-  (get @state type []))
+  (reverse (get @state type [])))
 
 (def required-keys #{:id :body :timestamp :type})
 

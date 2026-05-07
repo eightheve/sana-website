@@ -47,7 +47,7 @@
                   [:td (field 1)]])])
      [:button {:type "submit"} "Sign"]]
    [:hr]
-   (for [post (reverse (get-posts))]
+   (for [post (get-posts)]
      [:article {:class "guestbook-post"}
       [:h3 (if (:homepage post)
              [:a {:href (:homepage post)} (:username post)]
