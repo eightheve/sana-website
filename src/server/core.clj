@@ -34,6 +34,7 @@
    :headers {"Content-Type" "text/html; charset=utf-8"
              "Cache-Control" "no-cache"}
    :body (str (h/html (h/raw "<!DOCTYPE html>")
+                      (h/raw (str "<!--" (layouts/disclaimer) "-->"))
                       [:html {:lang "en"}
                        (head)
                        [:body (layouts/make-body content-key request)]]))})

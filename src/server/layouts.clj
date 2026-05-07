@@ -14,6 +14,9 @@
 (defn t [path]
   (get-in content path))
 
+(defn disclaimer []
+  (t [:gpl-disclaimer]))
+
 ;; MODULES
 (defn page-header [page-key request]
   (let [header (get content :header)

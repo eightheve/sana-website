@@ -67,4 +67,10 @@
                                     " asking to be added. I'll send out emails before chapters are released for beta readings, and I'll send emails when final drafts are published. I promise not to spam you!")}}
 
  :contacts [{:label "Matrix" :id ([:span {:class "at"}] "sana:doppel.moe")}
-            {:label "Email" :id ("sana" [:span {:class "at"}] "doppel.moe")}]}
+            {:label "Email" :id ("sana" [:span {:class "at"}] "doppel.moe")}]
+ :gpl-disclaimer "sana.doppel.moe
+                  Copywrite (C) 2026 Sana
+                  
+                  This website is free software, you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.
+                  
+                  The source code of this website, and a copy of the GNU General Public License are available at https://github.com/eightheve/sana-doppel-moe, or upon email request to Sana (sana@doppel.moe)."}
