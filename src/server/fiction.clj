@@ -1,7 +1,8 @@
 (ns server.fiction
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
-            [markdown.core :as md])
+            [markdown.core :as md]
+            [clojure.java.shell])
   (:import [java.util UUID]))
 
 (def fiction-dir
