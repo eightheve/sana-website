@@ -27,6 +27,7 @@ in
 pkgs.mkShell {
   buildInputs = with pkgs; [
     clojure
+    pandoc
     dtlv
     clojure-lsp
     vim

@@ -4,10 +4,12 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    fiction-repo.url = "github:eightheve/fiction";
   };
 
   outputs = {
     self,
+    fiction-repo,
     nixpkgs,
     flake-utils,
   }:
@@ -114,6 +116,8 @@
             after = ["network.target"];
             description = "Backend for ${cfg.user}.${cfg.domain}";
 
+            path = [pkgs.pandoc];
+
             serviceConfig = {
               Type = "simple";
               User = cfg.user;
@@ -122,6 +126,7 @@
               Environment = [
                 "DB_PATH=${cfg.stateDir}/similar-songs.db"
                 "PORT=${toString cfg.localPort}"
+                "FICTION_DIR=${fiction-repo}"
               ];
               ExecStart = "${pkgs.clojure}/bin/clojure -M:run";
               Restart = "on-failure";

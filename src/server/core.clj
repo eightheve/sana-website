@@ -10,7 +10,8 @@
             [server.lastfm :as lastfm]
             [server.layouts :as layouts]
             [server.blog :as blog]
-            [server.guestbook :as guestbook]))
+            [server.guestbook :as guestbook]
+            [server.fiction :as fiction]))
 
 (defonce server (atom nil))
 
@@ -89,6 +90,69 @@
   (GET "/spaces/" req   (page :spaces req))
 
   (GET "/spaces/fiction/" req   (page :spaces/fiction req))
+  (GET "/spaces/fiction/:project/" req
+    (page :spaces/fiction-project req))
+  (GET "/spaces/fiction/:project/chapters/:chapter" req
+    (page :spaces/fiction-chapter req))
+  (GET "/spaces/fiction/:project/chapters/:chapter.:format" req
+    (let [project  (get-in req [:route-params :project])
+          chapter  (get-in req [:route-params :chapter])
+          format   (get-in req [:route-params :format])]
+      (condp = format
+        "txt"
+        (let [result (fiction/chapter-txt project chapter)]
+          (if result
+            {:status  200
+             :headers {"Content-Type" "text/plain; charset=utf-8"
+                       "Content-Disposition" (str "attachment; filename=\""
+                                                  project "-" (:slug result) ".txt\"")}
+             :body    (:content result)}
+            {:status 404
+             :headers {"Content-Type" "text/plain"}
+             :body    "Not found"}))
+        "epub"
+        (let [result (fiction/chapter-epub project chapter)]
+          (if result
+            {:status  200
+             :headers {"Content-Type" "application/epub+zip"
+                       "Content-Disposition" (str "attachment; filename=\""
+                                                  (:filename result) "\"")}
+             :body    (clojure.java.io/file (:file result))}
+            {:status 404
+             :headers {"Content-Type" "text/plain"}
+             :body    "Not found"}))
+        {:status 400
+         :headers {"Content-Type" "text/plain"}
+         :body    "Unknown format"})))
+  (GET "/spaces/fiction/:project.:format" req
+    (let [project (get-in req [:route-params :project])
+          format   (get-in req [:route-params :format])]
+      (condp = format
+        "txt"
+        (let [result (fiction/project-txt project)]
+          (if result
+            {:status  200
+             :headers {"Content-Type" "text/plain; charset=utf-8"
+                       "Content-Disposition" (str "attachment; filename=\""
+                                                  project ".txt\"")}
+             :body    (:content result)}
+            {:status 404
+             :headers {"Content-Type" "text/plain"}
+             :body    "Not found"}))
+        "epub"
+        (let [result (fiction/project-epub project)]
+          (if result
+            {:status  200
+             :headers {"Content-Type" "application/epub+zip"
+                       "Content-Disposition" (str "attachment; filename=\""
+                                                  (:filename result) "\"")}
+             :body    (clojure.java.io/file (:file result))}
+            {:status 404
+             :headers {"Content-Type" "text/plain"}
+             :body    "Not found"}))
+        {:status 400
+         :headers {"Content-Type" "text/plain"}
+         :body    "Unknown format"})))
   (GET "/spaces/webrings/" req  (page :spaces/webrings req))
   (GET "/spaces/guestbook/" req (page :spaces/guestbook req))
   (POST "/spaces/guestbook/" req
