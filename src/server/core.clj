@@ -7,7 +7,6 @@
             [ring.middleware.gzip :refer [wrap-gzip]]
             [hiccup2.core :as h]
 
-            [server.lastfm :as lastfm]
             [server.layouts :as layouts]
             [server.blog :as blog]
             [server.guestbook :as guestbook]
@@ -203,6 +202,5 @@
   (start-server))
 
 (defn -main []
-  (lastfm/start-updater! (System/getenv "LASTFM_USERNAME") (* 2 1000 60))
   (restart-server)
   (println "Server started on port" (port)))

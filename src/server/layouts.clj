@@ -3,7 +3,6 @@
             [clojure.java.io :as io]
             [clojure.string :as string]
             [hiccup2.core :as h]
-            [server.lastfm :as lastfm]
             [server.hit-counter :as hit-counter]
             [server.blog :as blog]
             [server.guestbook :as guestbook]
@@ -147,13 +146,3 @@
 (defn make-body [page-key request]
   (list (page-header page-key request)
        (get-body page-key request)))
-
-(defn get-last-song []
-  (let [response (lastfm/get-last-song (System/getenv "LASTFM_USERNAME"))
-        track (get-in response [:lfm :recenttracks :track])]
-    {:name (get-in track [:name :text])
-     :artist (get-in track [:artist :text])
-     :album (get-in track [:album :text])
-     :image-url (get-in track [:image :text])
-     :url (get-in track [:url :text])
-     :date-unix (get-in track [:date :uts])}))
