@@ -103,24 +103,20 @@
       (list
        [:h2 (clojure.string/replace (:slug chapter) "-" " ")]
        (when (:html chapter)
-         (list [:ul (let [prev (->> (:chapters project)
-                                    (filter #(= (:order %) (dec (:order chapter))))
-                                    first)]
-                      (if prev
-                        [:a {:href (str "/spaces/fiction/" project-slug
-                                        "/chapters/" (:slug prev))}
-                         (clojure.string/replace (:slug prev) "-" " ")]
-                        [:span]))
-                    [:a {:href (str "/spaces/fiction/" project-slug "/")}
-                        (:title project)]
-                    (let [next (->> (:chapters project)
-                                   (filter #(= (:order %) (inc (:order chapter))))
-                                   first)]
-                      (if next
-                        [:a {:href (str "/spaces/fiction/" project-slug
-                                        "/chapters/" (:slug next))}
-                         (clojure.string/replace (:slug next) "-" " ")]
-                        [:span]))]
+         (list (let [chapters-by-order (into {} (map (juxt :order identity)) (:chapters project))
+                     ordinal (:order chapter)
+                     prev (get chapters-by-order (dec ordinal))
+                     next (get chapters-by-order (inc ordinal))
+                     chapter-name #(clojure.string/replace (:slug %) "-" " ")
+                     project-url (str "/spaces/fiction/" project-slug "/")
+                     chapter-url #(str project-url "chapters/" (:slug %))]
+                 [:ul {:id "chapter-navigation"}
+                  [:li (when-some [p prev]
+                         [:a {:href (chapter-url p)} (str "<- " (chapter-name p))])]
+                  [:li [:a {:href project-url}
+                        (:title project)]]
+                  [:li (when-some [n next]
+                         [:a {:href (chapter-url n)} (str (chapter-name n) " ->")])]])
                [:div (h/raw (:html chapter))]))))))
 
 (defn not-found []

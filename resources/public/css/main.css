@@ -259,3 +259,22 @@ span.at::before {
 span.at {
   color: var(--accent-2);
 }
+
+/* ================================================== */
+/* ==================== FICTION  ==================== */
+/* ================================================== */
+
+#chapter-navigation {
+  width: 100%;
+  padding: 0 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+#chapter-navigation > li {
+  display: block;
+}
+
+#chapter-navigation *:nth-child(1) { text-align: left; }
+#chapter-navigation *:nth-child(2) { text-align: center; }
+#chapter-navigation *:nth-child(3) { text-align: right; }
