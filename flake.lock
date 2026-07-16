@@ -2,11 +2,11 @@
   "nodes": {
     "fiction-repo": {
       "locked": {
-        "lastModified": 1782990846,
-        "narHash": "sha256-ogy5+Av7ZER8Qf72KUjn74U/bXKMvPIDgaZtSxkZi8E=",
+        "lastModified": 1784199218,
+        "narHash": "sha256-Rs/qOmhLnUoDrwuDwIo9KW5FV0Fa0dJxKQJc9Y8dzPs=",
         "owner": "eightheve",
         "repo": "fiction",
-        "rev": "9f9071fa16756b653b0d9af8407aa1e3a7694a47",
+        "rev": "b5bd40086a875f62ee3e22879c65060b3a309c8b",
         "type": "github"
       },
       "original": {
