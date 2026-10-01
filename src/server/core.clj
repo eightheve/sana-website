@@ -10,7 +10,9 @@
             [server.layouts :as layouts]
             [server.blog :as blog]
             [server.guestbook :as guestbook]
-            [server.fiction :as fiction]))
+            [server.fiction :as fiction]
+            [server.album-graph :as album-graph]
+            [server.radio :as radio]))
 
 (defonce server (atom nil))
 
@@ -19,7 +21,7 @@
               Integer/parseInt)
       45000))
 
-(defn head []
+(defn head [page-key]
   [:head
    [:title "Sana's Homepage"]
    [:meta {:charset "UTF-8"}]
@@ -27,7 +29,12 @@
    [:link {:href "/css/main.css" :rel "stylesheet"}]
    [:link
     {:href "/img/favicon-64x64.png" :rel "icon" :type "image/png" :sizes "64x64"}]
-   [:script "let FF_FOUC_FIX;"]])
+   [:script "let FF_FOUC_FIX;"]
+   (when (= page-key :spaces/album-graph)
+     (list
+      [:script {:type "importmap"}
+       (h/raw "{\"imports\":{\"three\":\"/js/album-graph/vendor/three.module.min.js\",\"three/addons/\":\"/js/album-graph/vendor/three/addons/\",\"d3-force-3d\":\"/js/album-graph/vendor/d3-force-3d.esm.js\"}}")]
+      [:script {:type "module" :src "/js/album-graph/main.js"}]))])
 
 (defn page [content-key request]
   {:status 200
@@ -36,7 +43,7 @@
    :body (str (h/html (h/raw "<!DOCTYPE html>")
                       (h/raw (str "<!--" (layouts/disclaimer) "-->"))
                       [:html {:lang "en"}
-                       (head)
+                       (head content-key)
                        [:body (layouts/make-body content-key request)]]))})
 
 (defn gen-token []
@@ -182,6 +189,19 @@
                                    :homepage (get params "homepage"))
             (redirect "/spaces/guestbook/")))))
   (GET "/spaces/updates/" req   (page :spaces/updates req))
+  (GET "/spaces/album-graph/" req (page :spaces/album-graph req))
+
+  (GET "/spaces/album-graph/blob" req (album-graph/blob req))
+  (GET "/spaces/album-graph/atlas/:file" req
+    (album-graph/atlas (get-in req [:route-params :file]) req))
+
+  (POST "/spaces/album-graph/radio/login" req (radio/login req))
+  (POST "/spaces/album-graph/radio/logout" req (radio/logout req))
+  (GET "/spaces/album-graph/radio/status" req (radio/status req))
+  (GET "/spaces/album-graph/radio/album" req (radio/album req))
+  (GET "/spaces/album-graph/radio/stream" req (radio/stream req))
+  (GET "/spaces/album-graph/radio/cover" req (radio/cover req))
+  (POST "/spaces/album-graph/radio/scrobble" req (radio/scrobble req))
 
   (routes (context "/api/auth" [] (wrap-auth auth-api-routes)))
 

@@ -119,6 +119,16 @@
                          [:a {:href (chapter-url n)} (str (chapter-name n) " ->")])]])
                [:div (h/raw (:html chapter))]))))))
 
+(defn album-graph []
+  [:main {:id "album-graph"}
+   [:canvas {:id "view"}]
+   [:div {:id "graph-status"} "loading…"]
+   [:div {:id "graph-hints" :hidden true}]
+   [:div {:id "graph-stack"}
+    [:div {:id "graph-radio" :hidden true}]
+    [:div {:id "graph-select" :hidden true}]
+    [:div {:id "graph-info" :hidden true}]]])
+
 (defn not-found []
   (list [:h2 "404: Not Found"]
         [:p "The page you were looking for could not be found!"]))
@@ -135,6 +145,8 @@
      :spaces/fiction-project (fiction-project request)
      :spaces/fiction-chapter (fiction-chapter request)
      :spaces/guestbook (guestbook/get-page)
+
+     :spaces/album-graph (album-graph)
 
      :404 (not-found)
      [:p "Nothing to see here yet!"])]])

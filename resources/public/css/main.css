@@ -278,3 +278,173 @@ span.at {
 #chapter-navigation *:nth-child(1) { text-align: left; }
 #chapter-navigation *:nth-child(2) { text-align: center; }
 #chapter-navigation *:nth-child(3) { text-align: right; }
+
+
+/* ====================================================== */
+/* ==================== ALBUM GRAPH  ==================== */
+/* ====================================================== */
+
+main:has(main#album-graph) {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  height: 100vh;
+}
+
+main#album-graph {
+  height: 100%;
+  width: 100%;
+}
+
+div#content-root:has(main#album-graph) {
+  padding: 0;
+}
+
+main#album-graph {
+  position: relative;
+}
+
+main#album-graph canvas#view {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--shade-00);
+  cursor: grab;
+}
+
+main#album-graph canvas#view.dragging {
+  cursor: grabbing;
+}
+
+#graph-status {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 12px;
+  color: var(--shade-10);
+  pointer-events: none;
+}
+
+#graph-hints {
+  position: absolute;
+  top: 30px;
+  left: 8px;
+  font-size: 11px;
+  color: var(--shade-10);
+  pointer-events: none;
+}
+
+#graph-stack {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+  pointer-events: none;
+}
+
+#graph-info,
+#graph-select,
+#graph-radio {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+#graph-info {
+  border: 1px solid var(--shade-01);
+  background: rgba(243, 243, 243, 0.92);
+}
+
+#graph-select {
+  border: 1px solid var(--accent-2);
+  background: rgba(243, 243, 243, 0.95);
+}
+
+#graph-info b,
+#graph-select b,
+#graph-radio b {
+  color: var(--accent-3);
+}
+
+#graph-radio {
+  border: 1px solid var(--accent-2);
+  background: rgba(243, 243, 243, 0.95);
+  pointer-events: auto;
+}
+
+#graph-radio img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  margin-bottom: 6px;
+}
+
+#graph-radio .mq {
+  overflow: hidden;
+  white-space: nowrap;
+  height: 15px;
+}
+
+#graph-radio .mq > span {
+  display: inline-block;
+  transform: translateX(var(--mq-over, 0px));
+  animation: mqscroll var(--mq-dur, 0s) linear infinite alternate;
+}
+
+@keyframes mqscroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(var(--mq-over, 0px)); }
+}
+
+#graph-radio .mq.small,
+#graph-radio .mq.small > span {
+  font-size: 11px;
+  color: var(--shade-10);
+}
+
+#graph-radio .rbtns {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+#graph-radio button {
+  font: inherit;
+  background: var(--accent-2);
+  color: var(--shade-00);
+  border: 1px solid var(--accent-3);
+  padding: 2px 12px;
+  cursor: pointer;
+}
+
+#graph-radio button:hover {
+  background: var(--accent-3);
+}
+
+#graph-radio input {
+  font: inherit;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 4px 0;
+  padding: 2px 4px;
+  border: 1px solid var(--shade-01);
+  background: var(--shade-00);
+  color: var(--shade-11);
+}
+
+#graph-radio form button {
+  margin-top: 4px;
+}
+
+#graph-radio .disclaimer {
+  font-size: 10px;
+  color: var(--shade-10);
+  margin-top: 6px;
+}

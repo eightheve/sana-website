@@ -20,8 +20,8 @@
                                                 :path "/spaces/webrings/"}
                               :spaces/guestbook {:label "Guestbook"
                                                  :path "/spaces/guestbook/"}
-                              :spaces/updates {:label "Updates"
-                                               :path "/spaces/updates/"}}}}
+                              :spaces/album-graph {:label "Album Graph"
+                                                   :path "/spaces/album-graph/"}}}}
 
  :index {:intro {:body ("Welcome! I'm Sana and you're on my website :) I'm happy to have you here and I hope you'll stay to take a look around. A little more information about me can be found "
                         [:a {:href "/sana/"} "here!"]
