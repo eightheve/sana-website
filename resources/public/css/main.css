@@ -45,6 +45,8 @@
   /*--accent-1: #4a9f79;
   --accent-0: #7ac498;*/
   --accent-0: #98c7a9;
+
+  --blog-collapsed-height: 24rem;
 }
 
 /* ==================== I18N ==================== */
@@ -122,6 +124,54 @@ a {
 
 .blog-post h2 { margin-bottom: 4px }
 .blog-post h4 { margin-top: 4px; margin-bottom: 0 }
+
+.blog-post-body.is-collapsed {
+  position: relative;
+  max-height: var(--blog-collapsed-height);
+  overflow: hidden;
+}
+
+.blog-post-body.is-collapsed::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3rem;
+  background: linear-gradient(transparent, var(--shade-00));
+  pointer-events: none;
+}
+
+.blog-toggle {
+  display: block;
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent-2);
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  appearance: none;
+}
+
+.blog-toggle:hover,
+.blog-toggle:focus {
+  color: var(--accent-3);
+  text-decoration: underline;
+}
+
+@media print {
+  .blog-post-body.is-collapsed {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .blog-post-body.is-collapsed::after,
+  .blog-toggle {
+    display: none;
+  }
+}
 
 .blog-pagination {
   display: flex;

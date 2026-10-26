@@ -30,6 +30,8 @@
    [:link
     {:href "/img/favicon-64x64.png" :rel "icon" :type "image/png" :sizes "64x64"}]
    [:script "let FF_FOUC_FIX;"]
+   (when (= page-key :blog)
+     [:script {:src "/js/blog.js" :defer true}])
    (when (= page-key :spaces/album-graph)
      (list
       [:script {:type "importmap"}
