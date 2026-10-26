@@ -98,7 +98,11 @@
 
   (GET "/" req          (page :index req))
   (GET "/sana/" req     (page :sana req))
-  (GET "/blog/" req     (page :blog req))
+  (GET "/blog/" req
+    (let [page-num (blog/parse-page req)]
+      (if (<= page-num (blog/last-page))
+        (page :blog (assoc req :blog/page page-num))
+        (not-found-page))))
   (GET "/spaces/" req   (page :spaces req))
 
   (GET "/spaces/fiction/" req   (page :spaces/fiction req))

@@ -139,7 +139,7 @@
     (case page-key
      :index (index)
      :sana (sana)
-     :blog (blog/get-page)
+     :blog (blog/get-page (get request :blog/page))
 
      :spaces/fiction (fiction)
      :spaces/fiction-project (fiction-project request)

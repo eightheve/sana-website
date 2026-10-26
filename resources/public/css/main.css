@@ -123,6 +123,12 @@ a {
 .blog-post h2 { margin-bottom: 4px }
 .blog-post h4 { margin-top: 4px; margin-bottom: 0 }
 
+.blog-pagination {
+  display: flex;
+  justify-content: space-between;
+  margin: 24px 0;
+}
+
 /* ================================================= */
 /* ==================== HEADER  ==================== */
 /* ================================================= */
