@@ -36,15 +36,21 @@
        (h/raw "{\"imports\":{\"three\":\"/js/album-graph/vendor/three.module.min.js\",\"three/addons/\":\"/js/album-graph/vendor/three/addons/\",\"d3-force-3d\":\"/js/album-graph/vendor/d3-force-3d.esm.js\"}}")]
       [:script {:type "module" :src "/js/album-graph/main.js"}]))])
 
-(defn page [content-key request]
-  {:status 200
-   :headers {"Content-Type" "text/html; charset=utf-8"
-             "Cache-Control" "no-cache"}
-   :body (str (h/html (h/raw "<!DOCTYPE html>")
-                      (h/raw (str "<!--" (layouts/disclaimer) "-->"))
-                      [:html {:lang "en"}
-                       (head content-key)
-                       [:body (layouts/make-body content-key request)]]))})
+(defn page
+  ([content-key request]
+   (page content-key request 200))
+  ([content-key request status]
+   {:status status
+    :headers {"Content-Type" "text/html; charset=utf-8"
+              "Cache-Control" "no-cache"}
+    :body (str (h/html (h/raw "<!DOCTYPE html>")
+                       (h/raw (str "<!--" (layouts/disclaimer) "-->"))
+                       [:html {:lang "en"}
+                        (head content-key)
+                        [:body (layouts/make-body content-key request)]]))}))
+
+(defn not-found-page []
+  (page :404 nil 404))
 
 (defn gen-token []
   (apply str (repeatedly 16 #(rand-nth "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))))
@@ -97,9 +103,16 @@
 
   (GET "/spaces/fiction/" req   (page :spaces/fiction req))
   (GET "/spaces/fiction/:project/" req
-    (page :spaces/fiction-project req))
+    (let [project (get-in req [:route-params :project])]
+      (if (fiction/get-project project)
+        (page :spaces/fiction-project req)
+        (not-found-page))))
   (GET "/spaces/fiction/:project/chapters/:chapter" req
-    (page :spaces/fiction-chapter req))
+    (let [project (get-in req [:route-params :project])
+          chapter (get-in req [:route-params :chapter])]
+      (if (fiction/get-chapter project chapter)
+        (page :spaces/fiction-chapter req)
+        (not-found-page))))
   (GET "/spaces/fiction/:project/chapters/:chapter.:format" req
     (let [project  (get-in req [:route-params :project])
           chapter  (get-in req [:route-params :chapter])
@@ -206,7 +219,7 @@
   (routes (context "/api/auth" [] (wrap-auth auth-api-routes)))
 
   (wrap-cache-static (route/resources "/") 86400)
-  (route/not-found (page :404 nil)))
+  (route/not-found (not-found-page)))
 
 (defn start-server []
   (reset! server
