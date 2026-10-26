@@ -1,5 +1,7 @@
 (ns server.blog
-  (:require [server.entries :as entries]
+  (:require [hiccup2.core :as h]
+            [markdown.core :as md]
+            [server.entries :as entries]
             [server.time-diff :as time-diff])
   (:import (java.util UUID)))
 
@@ -18,4 +20,4 @@
     [:article {:class "blog-post"}
      [:h2 (:title post)]
      [:h4 {:class "timestamp"} (time-diff/fuzzy-time-since (str (:timestamp post)))]
-     [:p (:body post)]]))
+     [:div {:class "blog-post-body"} (h/raw (md/md-to-html-string (:body post)))]]))
