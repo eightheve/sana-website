@@ -1,16 +1,13 @@
 {:title "Sana's Homepage"
 
  :header {:index {:label "Home"
-                  :path "/"
-                  :subpages []}
+                  :path "/"}
 
           :sana {:label "Sana"
-                     :path "/sana/"
-                     :subpages []}
+                 :path "/sana/"}
 
           :blog {:label "Blog"
-                 :path "/blog/"
-                 :subpages []}
+                 :path "/blog/"}
 
           :spaces {:label "Spaces"
                    :path "/spaces/"

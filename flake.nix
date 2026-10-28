@@ -124,7 +124,6 @@
               WorkingDirectory = "${self}";
               EnvironmentFile = cfg.envFile;
               Environment = [
-                "DB_PATH=${cfg.stateDir}/similar-songs.db"
                 "PORT=${toString cfg.localPort}"
                 "FICTION_DIR=${fiction-repo}"
               ];

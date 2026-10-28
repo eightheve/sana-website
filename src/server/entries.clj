@@ -1,23 +1,19 @@
-(ns server.entries)
-
-(def state-dir (or (System/getenv "STATE_DIRECTORY") "."))
+(ns server.entries
+  (:require [server.storage :as storage]))
 
 (defn entries-file [type]
-  (str state-dir "/" (name type) ".edn"))
+  (storage/state-file (str (name type) ".edn")))
 
 (defn load-type [type]
-  (try
-    (clojure.edn/read-string (slurp (entries-file type)))
-    (catch java.io.FileNotFoundException _ [])
-    (catch Exception e
-      (println (str "Warning: Could not load " type " entries: " (.getMessage e)))
-      [])))
+  (storage/load-edn (entries-file type) []))
 
 (def state (atom {}))
 
 (defn ensure-type-loaded [type]
-  (when-not (contains? @state type)
-    (swap! state assoc type (load-type type))))
+  (swap! state (fn [s]
+                 (if (contains? s type)
+                   s
+                   (assoc s type (load-type type))))))
 
 (defn get-entries [type]
   (ensure-type-loaded type)
@@ -41,5 +37,5 @@
     (doseq [[type entries] new-state]
       (let [old-count (count (get old-state type []))
             new-count (count entries)]
-        (when (> new-count old-count)
-          (spit (entries-file type) (pr-str entries)))))))
+        (when (and (contains? old-state type) (> new-count old-count))
+          (storage/save-edn! (entries-file type) entries))))))

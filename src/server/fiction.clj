@@ -2,11 +2,9 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
             [markdown.core :as md]
+            [server.config :as config]
             [clojure.java.shell])
   (:import [java.util UUID]))
-
-(def fiction-dir
-  (System/getenv "FICTION_DIR"))
 
 ;; ---- file helpers ----
 
@@ -18,6 +16,15 @@
 (defn- render-md [text]
   (when text
     (md/md-to-html-string text)))
+
+(defn- safe-file [& parts]
+  (when config/fiction-dir
+    (let [root      (.getCanonicalFile (io/file config/fiction-dir))
+          file      (.getCanonicalFile (apply io/file config/fiction-dir parts))
+          root-path (.getPath root)]
+      (when (string/starts-with? (.getPath file)
+                                 (str root-path java.io.File/separator))
+        file))))
 
 ;; ---- chapter filename parsing ----
 
@@ -45,102 +52,98 @@
      :chapters (list-chapters dir)}))
 
 (defn list-projects []
-  (let [dir (io/file fiction-dir)]
-    (when (.exists dir)
-      (->> (.listFiles dir)
-           (filter #(.isDirectory %))
-           (filter #(not (string/starts-with? (.getName %) ".")))
-           (sort-by #(.getName %))
-           (map read-project)))))
+  (when config/fiction-dir
+    (let [dir (io/file config/fiction-dir)]
+      (when (.exists dir)
+        (->> (.listFiles dir)
+             (filter #(.isDirectory %))
+             (filter #(not (string/starts-with? (.getName %) ".")))
+             (sort-by #(.getName %))
+             (map read-project))))))
 
 (defn get-project [slug]
-  (let [dir (io/file fiction-dir slug)]
-    (when (.exists dir)
+  (when-let [dir (safe-file slug)]
+    (when (and (.exists dir) (.isDirectory dir))
       (read-project dir))))
 
-(defn get-chapter [project-slug chapter-slug]
-  (let [project (get-project project-slug)]
+(defn- find-chapter [project-slug chapter-slug]
+  (when-let [project (get-project project-slug)]
     (when-let [chapter (->> (:chapters project)
                             (filter #(= (:slug %) chapter-slug))
                             first)]
-      (let [file (io/file fiction-dir project-slug "chapters" (:file chapter))]
-        (assoc chapter :html (render-md (slurp-if-exists file)))))))
+      (when-let [file (safe-file project-slug "chapters" (:file chapter))]
+        {:project project
+         :chapter chapter
+         :file    file}))))
+
+(defn chapter-page-data [project-slug chapter-slug]
+  (when-let [{:keys [project chapter file]}
+             (find-chapter project-slug chapter-slug)]
+    {:project project
+     :chapter (assoc chapter :html (render-md (slurp-if-exists file)))}))
 
 ;; ---- downloads ----
 
 (defn- pandoc->epub [markdown title output-path]
   (let [tmp-input (str "/tmp/fiction-pandoc-" (UUID/randomUUID) ".md")]
-    (spit tmp-input markdown)
-    (let [result (clojure.java.shell/sh
-                   "pandoc" tmp-input
-                   "-f" "markdown"
-                   "-t" "epub"
-                   "--metadata" (str "title=" title)
-                   "-o" output-path)]
-      (io/delete-file tmp-input true)
-      (when-not (zero? (:exit result))
-        (throw (ex-info (str "pandoc failed: " (:err result)) {}))))
+    (try
+      (spit tmp-input markdown)
+      (let [result (clojure.java.shell/sh
+                     "pandoc" tmp-input
+                     "-f" "markdown"
+                     "-t" "epub"
+                     "--metadata" (str "title=" title)
+                     "-o" output-path)]
+        (when-not (zero? (:exit result))
+          (throw (ex-info (str "pandoc failed: " (:err result)) {}))))
+      (catch Exception e
+        (io/delete-file output-path true)
+        (throw e))
+      (finally
+        (io/delete-file tmp-input true)))
     output-path))
 
 (defn chapter-txt [project-slug chapter-slug]
-  (let [project (get-project project-slug)]
-    (when-let [chapter (->> (:chapters project)
-                            (filter #(= (:slug %) chapter-slug))
-                            first)]
-      (let [file (io/file fiction-dir project-slug "chapters" (:file chapter))]
-        {:title   (str (:title project) " - " (string/replace (:slug chapter) "-" " "))
-         :slug    (:slug chapter)
-         :content (slurp-if-exists file)}))))
+  (when-let [{:keys [chapter file]} (find-chapter project-slug chapter-slug)]
+    {:slug    (:slug chapter)
+     :content (slurp-if-exists file)}))
 
 (defn chapter-epub [project-slug chapter-slug]
-  (let [project (get-project project-slug)]
-    (when-let [chapter (->> (:chapters project)
-                            (filter #(= (:slug %) chapter-slug))
-                            first)]
-      (let [file     (io/file fiction-dir project-slug "chapters" (:file chapter))
-            markdown (slurp-if-exists file)
-            epub     (str "/tmp/fiction-" project-slug "-" chapter-slug "-"
-                          (UUID/randomUUID) ".epub")
-            title    (str (:title project) " - "
-                          (string/replace (:slug chapter) "-" " "))]
-        (pandoc->epub markdown title epub)
-        {:file     epub
-         :filename (str project-slug "-" (:file chapter) ".epub")}))))
+  (when-let [{:keys [project chapter file]}
+             (find-chapter project-slug chapter-slug)]
+    (let [markdown (slurp-if-exists file)
+          epub     (str "/tmp/fiction-" project-slug "-" chapter-slug "-"
+                        (UUID/randomUUID) ".epub")
+          title    (str (:title project) " - "
+                        (string/replace (:slug chapter) "-" " "))]
+      (pandoc->epub markdown title epub)
+      {:file     epub
+       :filename (str project-slug "-" (:file chapter) ".epub")})))
 
 (defn project-txt [project-slug]
-  (let [project (get-project project-slug)]
-    (when project
-      (let [chapter-texts (->> (:chapters project)
-                               (sort-by :order)
-                               (keep (fn [ch]
-                                       (slurp-if-exists
-                                        (io/file fiction-dir project-slug
-                                                 "chapters" (:file ch))))))]
-        {:title   (:title project)
-         :content (string/join "\n\n---\n\n" chapter-texts)}))))
+  (when-let [project (get-project project-slug)]
+    (let [chapter-texts (->> (:chapters project)
+                             (sort-by :order)
+                             (keep (fn [ch]
+                                     (when-let [file (safe-file project-slug
+                                                                "chapters"
+                                                                (:file ch))]
+                                       (slurp-if-exists file)))))]
+      {:content (string/join "\n\n---\n\n" chapter-texts)})))
 
 (defn project-epub [project-slug]
-  (let [project (get-project project-slug)]
-    (when project
-      (let [chapter-files (->> (:chapters project)
-                               (sort-by :order)
-                               (map #(io/file fiction-dir project-slug
-                                              "chapters" (:file %))))
-            tmp-input  (str "/tmp/fiction-pandoc-" (UUID/randomUUID) ".md")
-            combined   (->> chapter-files
-                            (keep slurp-if-exists)
-                            (string/join "\n\n---\n\n"))]
-        (spit tmp-input combined)
-        (let [epub   (str "/tmp/fiction-" project-slug "-"
-                          (UUID/randomUUID) ".epub")
-              result (clojure.java.shell/sh
-                       "pandoc" tmp-input
-                       "-f" "markdown"
-                       "-t" "epub"
-                       "--metadata" (str "title=" (:title project))
-                       "-o" epub)]
-          (io/delete-file tmp-input true)
-          (when-not (zero? (:exit result))
-            (throw (ex-info (str "pandoc failed: " (:err result)) {})))
-          {:file     epub
-           :filename (str project-slug ".epub")})))))
+  (when-let [project (get-project project-slug)]
+    (let [chapter-texts (->> (:chapters project)
+                             (sort-by :order)
+                             (keep (fn [ch]
+                                     (when-let [file (safe-file project-slug
+                                                                "chapters"
+                                                                (:file ch))]
+                                       (slurp-if-exists file)))))
+          epub          (str "/tmp/fiction-" project-slug "-"
+                            (UUID/randomUUID) ".epub")]
+      (pandoc->epub (string/join "\n\n---\n\n" chapter-texts)
+                    (:title project)
+                    epub)
+      {:file     epub
+       :filename (str project-slug ".epub")})))

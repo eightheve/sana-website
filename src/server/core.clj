@@ -6,9 +6,11 @@
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.gzip :refer [wrap-gzip]]
             [hiccup2.core :as h]
+            [clojure.java.io :as io]
 
             [server.layouts :as layouts]
             [server.blog :as blog]
+            [server.config :as config]
             [server.guestbook :as guestbook]
             [server.fiction :as fiction]
             [server.album-graph :as album-graph]
@@ -16,14 +18,9 @@
 
 (defonce server (atom nil))
 
-(defn port []
-  (or (some-> (System/getenv "PORT")
-              Integer/parseInt)
-      45000))
-
 (defn head [page-key]
   [:head
-   [:title "Sana's Homepage"]
+   [:title (layouts/t [:title])]
    [:meta {:charset "UTF-8"}]
    [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
    [:link {:href "/css/main.css" :rel "stylesheet"}]
@@ -54,11 +51,33 @@
 (defn not-found-page []
   (page :404 nil 404))
 
+(defn- text-response [status body]
+  {:status  status
+   :headers {"Content-Type" "text/plain"}
+   :body    body})
+
+(defn- text-download [result filename]
+  {:status  200
+   :headers {"Content-Type" "text/plain; charset=utf-8"
+             "Content-Disposition" (str "attachment; filename=\"" filename "\"")}
+   :body    (:content result)})
+
+(defn- epub-download [result]
+  (let [file (io/file (:file result))
+        body (try
+               (java.nio.file.Files/readAllBytes (.toPath file))
+               (finally
+                 (io/delete-file file true)))]
+    {:status  200
+     :headers {"Content-Type" "application/epub+zip"
+               "Content-Disposition" (str "attachment; filename=\"" (:filename result) "\"")}
+     :body    body}))
+
 (defn gen-token []
   (apply str (repeatedly 16 #(rand-nth "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))))
 
 (defonce api-token
-  (or (System/getenv "SANA_API_TOKEN")
+  (or config/api-token
       (let [token (gen-token)]
         (println "Generated API token:" token)
         token)))
@@ -95,118 +114,59 @@
          :body "Missing title or body"}))))
 
 (defroutes app
-  (GET "/index.html" req (redirect "/"))
-  (GET "/index" req (redirect "/"))
+  (GET "/index.html" _ (redirect "/"))
+  (GET "/index" _ (redirect "/"))
 
   (GET "/" req          (page :index req))
   (GET "/sana/" req     (page :sana req))
   (GET "/blog/" req
-    (let [page-num (blog/parse-page req)]
-      (if (<= page-num (blog/last-page))
-        (page :blog (assoc req :blog/page page-num))
-        (not-found-page))))
+    (if-let [page-data (blog/page-data req)]
+      (page :blog (assoc req :blog/page-data page-data))
+      (not-found-page)))
   (GET "/spaces/" req   (page :spaces req))
 
   (GET "/spaces/fiction/" req   (page :spaces/fiction req))
-  (GET "/spaces/fiction/:project/" req
-    (let [project (get-in req [:route-params :project])]
-      (if (fiction/get-project project)
-        (page :spaces/fiction-project req)
-        (not-found-page))))
-  (GET "/spaces/fiction/:project/chapters/:chapter" req
-    (let [project (get-in req [:route-params :project])
-          chapter (get-in req [:route-params :chapter])]
-      (if (fiction/get-chapter project chapter)
-        (page :spaces/fiction-chapter req)
-        (not-found-page))))
   (GET "/spaces/fiction/:project/chapters/:chapter.:format" req
-    (let [project  (get-in req [:route-params :project])
-          chapter  (get-in req [:route-params :chapter])
-          format   (get-in req [:route-params :format])]
+    (let [project (get-in req [:route-params :project])
+          chapter (get-in req [:route-params :chapter])
+          format  (get-in req [:route-params :format])]
       (condp = format
         "txt"
-        (let [result (fiction/chapter-txt project chapter)]
-          (if result
-            {:status  200
-             :headers {"Content-Type" "text/plain; charset=utf-8"
-                       "Content-Disposition" (str "attachment; filename=\""
-                                                  project "-" (:slug result) ".txt\"")}
-             :body    (:content result)}
-            {:status 404
-             :headers {"Content-Type" "text/plain"}
-             :body    "Not found"}))
+        (if-let [result (fiction/chapter-txt project chapter)]
+          (text-download result (str project "-" (:slug result) ".txt"))
+          (text-response 404 "Not found"))
         "epub"
-        (let [result (fiction/chapter-epub project chapter)]
-          (if result
-            {:status  200
-             :headers {"Content-Type" "application/epub+zip"
-                       "Content-Disposition" (str "attachment; filename=\""
-                                                  (:filename result) "\"")}
-             :body    (clojure.java.io/file (:file result))}
-            {:status 404
-             :headers {"Content-Type" "text/plain"}
-             :body    "Not found"}))
-        {:status 400
-         :headers {"Content-Type" "text/plain"}
-         :body    "Unknown format"})))
+        (if-let [result (fiction/chapter-epub project chapter)]
+          (epub-download result)
+          (text-response 404 "Not found"))
+        (text-response 400 "Unknown format"))))
+  (GET "/spaces/fiction/:project/chapters/:chapter" req
+    (let [data (fiction/chapter-page-data (get-in req [:route-params :project])
+                                          (get-in req [:route-params :chapter]))]
+      (if data
+        (page :spaces/fiction-chapter (assoc req :fiction/chapter data))
+        (not-found-page))))
   (GET "/spaces/fiction/:project.:format" req
     (let [project (get-in req [:route-params :project])
-          format   (get-in req [:route-params :format])]
+          format  (get-in req [:route-params :format])]
       (condp = format
         "txt"
-        (let [result (fiction/project-txt project)]
-          (if result
-            {:status  200
-             :headers {"Content-Type" "text/plain; charset=utf-8"
-                       "Content-Disposition" (str "attachment; filename=\""
-                                                  project ".txt\"")}
-             :body    (:content result)}
-            {:status 404
-             :headers {"Content-Type" "text/plain"}
-             :body    "Not found"}))
+        (if-let [result (fiction/project-txt project)]
+          (text-download result (str project ".txt"))
+          (text-response 404 "Not found"))
         "epub"
-        (let [result (fiction/project-epub project)]
-          (if result
-            {:status  200
-             :headers {"Content-Type" "application/epub+zip"
-                       "Content-Disposition" (str "attachment; filename=\""
-                                                  (:filename result) "\"")}
-             :body    (clojure.java.io/file (:file result))}
-            {:status 404
-             :headers {"Content-Type" "text/plain"}
-             :body    "Not found"}))
-        {:status 400
-         :headers {"Content-Type" "text/plain"}
-         :body    "Unknown format"})))
+        (if-let [result (fiction/project-epub project)]
+          (epub-download result)
+          (text-response 404 "Not found"))
+        (text-response 400 "Unknown format"))))
+  (GET "/spaces/fiction/:project/" req
+    (let [project (fiction/get-project (get-in req [:route-params :project]))]
+      (if project
+        (page :spaces/fiction-project (assoc req :fiction/project project))
+        (not-found-page))))
   (GET "/spaces/webrings/" req  (page :spaces/webrings req))
   (GET "/spaces/guestbook/" req (page :spaces/guestbook req))
-  (POST "/spaces/guestbook/" req
-    (let [content-length (some-> (get-in req [:headers "content-length"])
-                                 Integer/parseInt)
-          params  (:form-params req)
-          username (get params "username")
-          body    (get params "body")
-          ip      (or (get-in req [:headers "x-real-ip"])
-                      (get-in req [:headers "x-forwarded-for"])
-                      (:remote-addr req))]
-      (cond
-        (and content-length (> content-length 4096))
-        {:status 413
-         :headers {"Content-Type" "text/plain"}
-         :body "Payload too large"}
-        (not (guestbook/can-post? ip))
-        {:status 429
-         :headers {"Content-Type" "text/plain"}
-         :body "Too many requests"}
-        (not (and username body))
-        {:status 400
-         :headers {"Content-Type" "text/plain"}
-         :body "Missing username or body"}
-        :else
-        (do (guestbook/add-comment username body ip
-                                   :email    (get params "email")
-                                   :homepage (get params "homepage"))
-            (redirect "/spaces/guestbook/")))))
+  (POST "/spaces/guestbook/" req (guestbook/handle-post req))
   (GET "/spaces/updates/" req   (page :spaces/updates req))
   (GET "/spaces/album-graph/" req (page :spaces/album-graph req))
 
@@ -229,7 +189,7 @@
 
 (defn start-server []
   (reset! server
-          (run-jetty (wrap-gzip (wrap-params #'app)) {:port (port) :join? false})))
+          (run-jetty (wrap-gzip (wrap-params #'app)) {:port (config/port) :join? false})))
 
 (defn stop-server []
   (when @server
@@ -242,4 +202,4 @@
 
 (defn -main []
   (restart-server)
-  (println "Server started on port" (port)))
+  (println "Server started on port" (config/port)))

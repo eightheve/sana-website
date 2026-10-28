@@ -1,8 +1,6 @@
 (ns server.album-graph
-  (:require [clj-http.client :as http]))
-
-(def upstream
-  (or (System/getenv "TAGGER_URL") "http://10.100.0.2:9478"))
+  (:require [clj-http.client :as http]
+            [server.config :as config]))
 
 (def ^:private pass-headers
   ["content-type" "etag" "last-modified" "cache-control" "content-encoding"])
@@ -13,7 +11,7 @@
         conditional      (cond-> {}
                            if-none-match (assoc "If-None-Match" if-none-match)
                            if-modified-since (assoc "If-Modified-Since" if-modified-since))]
-    (http/get (str upstream path)
+    (http/get (str config/tagger-url path)
               (cond-> {:as :byte-array
                        :throw-exceptions false
                        :decompress-body false

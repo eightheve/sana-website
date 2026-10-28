@@ -1,4 +1,3 @@
-/*@import url("/sitelen-pona/linja-Eko.css");*/
 
 /* ==================== FONTS ==================== */
 
@@ -48,16 +47,6 @@
 
   --blog-collapsed-height: 24rem;
 }
-
-/* ==================== I18N ==================== */
-
-*:lang(en) {
-  font-family: "IBM Plex Mono", monospace;
-}
-
-/**:lang(tok) {
-  font-family: "linja Eko", monospace;
-}*/
 
 /* ==================== BASE ==================== */
 
@@ -123,7 +112,11 @@ a {
 .guestbook-post p { margin-top: 8px; }
 
 .blog-post h2 { margin-bottom: 4px }
-.blog-post h4 { margin-top: 4px; margin-bottom: 0 }
+.blog-post time.timestamp {
+  display: block;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
 
 .blog-post-body.is-collapsed {
   position: relative;
@@ -348,16 +341,13 @@ main:has(main#album-graph) {
 }
 
 main#album-graph {
+  position: relative;
   height: 100%;
   width: 100%;
 }
 
 div#content-root:has(main#album-graph) {
   padding: 0;
-}
-
-main#album-graph {
-  position: relative;
 }
 
 main#album-graph canvas#view {
@@ -409,16 +399,13 @@ main#album-graph canvas#view.dragging {
   box-sizing: border-box;
   padding: 8px 10px;
   font-size: 12px;
+  border: 1px solid var(--accent-2);
+  background: rgba(243, 243, 243, 0.95);
 }
 
 #graph-info {
   border: 1px solid var(--shade-01);
   background: rgba(243, 243, 243, 0.92);
-}
-
-#graph-select {
-  border: 1px solid var(--accent-2);
-  background: rgba(243, 243, 243, 0.95);
 }
 
 #graph-info b,
@@ -428,8 +415,6 @@ main#album-graph canvas#view.dragging {
 }
 
 #graph-radio {
-  border: 1px solid var(--accent-2);
-  background: rgba(243, 243, 243, 0.95);
   pointer-events: auto;
 }
 

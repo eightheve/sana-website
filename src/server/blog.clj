@@ -14,17 +14,22 @@
                       :body     body
                       :timestamp (int (/ (System/currentTimeMillis) 1000))}))
 
-(defn get-posts []
-  (sort-by :timestamp #(compare %2 %1) (entries/get-entries :blog)))
-
-(defn parse-page [request]
+(defn- timestamp-key [post]
   (try
-    (max 0 (Long/parseLong (get-in request [:query-params "page"])))
+    (Long/parseLong (str (:timestamp post)))
     (catch Exception _ 0)))
 
-(defn last-page []
-  (let [post-count (count (get-posts))]
-    (max 0 (dec (quot (+ post-count (dec posts-per-page)) posts-per-page)))))
+(defn- get-posts []
+  (sort-by timestamp-key #(compare %2 %1) (entries/get-entries :blog)))
+
+(defn- parse-page [request]
+  (let [raw (get-in request [:query-params "page"])]
+    (if (string? raw)
+      (max 0 (or (parse-long raw) 0))
+      0)))
+
+(defn- last-page-index [post-count]
+  (max 0 (dec (quot (+ post-count (dec posts-per-page)) posts-per-page))))
 
 (defn- page-url [page-num]
   (if (zero? page-num)
@@ -41,16 +46,24 @@
        [:a {:href (page-url (inc page-num)) :rel "next"} "Older posts →"]
        [:span])]))
 
-(defn get-page [page-num]
-  (let [page-num (or page-num 0)
-        final-page (last-page)
-        posts (->> (get-posts)
-                   (drop (* page-num posts-per-page))
-                   (take posts-per-page))]
+(defn page-data [request]
+  (let [posts      (get-posts)
+        page-num   (parse-page request)
+        final-page (last-page-index (count posts))]
+    (when (<= page-num final-page)
+      {:page-num   page-num
+       :final-page final-page
+       :posts      (->> posts
+                        (drop (* page-num posts-per-page))
+                        (take posts-per-page))})))
+
+(defn render-page [{:keys [page-num final-page posts] :as data}]
+  (when data
     (list
      (for [post posts]
        [:article {:class "blog-post"}
         [:h2 (:title post)]
-        [:h4 {:class "timestamp"} (time-diff/fuzzy-time-since (str (:timestamp post)))]
+        [:time {:class "timestamp" :datetime (time-diff/iso-time (:timestamp post))}
+         (time-diff/fuzzy-time-since (str (:timestamp post)))]
         [:div {:class "blog-post-body"} (h/raw (md/md-to-html-string (:body post)))]])
      (pagination page-num final-page))))

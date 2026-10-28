@@ -1,30 +1,17 @@
 (ns server.radio
   (:require [clojure.data.json :as json]
-            [clojure.edn :as edn]
             [clj-http.client :as http]
             [clojure.java.io :as io]
-            [clojure.string :as string])
+            [clojure.string :as string]
+            [server.config :as config]
+            [server.storage :as storage])
   (:import (java.util Base64)))
 
-(def nd-base
-  (or (System/getenv "ND_URL") "http://10.100.0.2:4533"))
-
-(def tagger-base
-  (or (System/getenv "TAGGER_URL") "http://10.100.0.2:9478"))
-
-(def state-dir
-  (or (System/getenv "STATE_DIRECTORY") "."))
-
 (defn- ids-file []
-  (io/file state-dir "radio-ids.edn"))
+  (storage/state-file "radio-ids.edn"))
 
 (defn- mbid-file []
-  (io/file state-dir "radio-map.json"))
-
-(defn- load-edn [f fallback]
-  (try
-    (edn/read-string (slurp f))
-    (catch Exception _ fallback)))
+  (storage/state-file "radio-map.json"))
 
 (defn- load-json [f fallback]
   (try
@@ -41,14 +28,11 @@
 
 (def ^:private nd-ids
   "id_hash -> navidrome album id, persisted across restarts." 
-  (atom (load-edn (ids-file) {})))
+  (atom (storage/load-edn (ids-file) {})))
 
 (add-watch nd-ids :persist
            (fn [_ _ _ new]
-             (try
-               (spit (ids-file) (pr-str new))
-               (catch Exception e
-                 (println "radio: failed to persist" (.getMessage e))))))
+             (storage/save-edn! (ids-file) new)))
 
 (defn- body-str [resp]
   (let [b (:body resp)]
@@ -56,14 +40,14 @@
 
 (defn- refresh-mbid-map! []
   (try
-    (let [resp (http/get (str tagger-base "/radio-map")
+    (let [resp (http/get (str config/tagger-url "/radio-map")
                          {:as :string :throw-exceptions false
                           :socket-timeout 15000 :conn-timeout 15000})]
       (when (= 200 (:status resp))
         (let [m (json/read-str (body-str resp))]
           (when (seq m)
             (reset! mbid-map m)
-            (spit (mbid-file) (body-str resp))))
+            (storage/save-text! (mbid-file) (body-str resp))))
         true))
     (catch Exception _ false)))
 
@@ -108,13 +92,13 @@
    :v "1.16.1" :c "sana-radio" :f "json"})
 
 (defn- ss-get [sess endpoint params]
-  (let [resp (http/get (str nd-base "/rest/" endpoint ".view")
+  (let [resp (http/get (str config/nd-url "/rest/" endpoint ".view")
                        {:query-params (merge (ss-params sess) params)
                         :as :string :socket-timeout 15000 :conn-timeout 15000})]
     (json/read-str (body-str resp) :key-fn keyword)))
 
 (defn- nd-post [path body]
-  (let [resp (http/post (str nd-base path)
+  (let [resp (http/post (str config/nd-url path)
                         {:body (json/write-str body)
                          :headers {"Content-Type" "application/json"}
                          :as :string :socket-timeout 15000 :conn-timeout 15000})]
@@ -155,7 +139,7 @@
           (json-resp 401 {:error "invalid credentials"})))
       (json-resp 401 {:error "invalid credentials"}))))
 
-(defn logout [req]
+(defn logout [_req]
   (json-resp 200 {:ok true} (clear-cookie)))
 
 (defn status [req]
@@ -201,7 +185,7 @@
     (try
       (let [id (get (:params req) "id")
             range (get-in req [:headers "range"])
-            resp (http/get (str nd-base "/rest/stream.view")
+            resp (http/get (str config/nd-url "/rest/stream.view")
                            {:query-params (assoc (ss-params sess) :id id)
                             :as :stream :decompress-body false
                             :throw-exceptions false
@@ -221,7 +205,7 @@
   (if-let [sess (session req)]
     (try
       (let [id (get (:params req) "id")
-            resp (http/get (str nd-base "/rest/getCoverArt.view")
+            resp (http/get (str config/nd-url "/rest/getCoverArt.view")
                            {:query-params (merge (ss-params sess)
                                                  {:id id :size 800})
                             :as :byte-array :decompress-body false

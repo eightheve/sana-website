@@ -17,15 +17,24 @@
       (< hours 96)      {:type :days-ago :amount (quot hours 24)}
       :else             {:type :absolute :instant past})))
 
+(defn- parse-epoch [utc]
+  (try
+    (Long/parseLong (str utc))
+    (catch Exception _ nil)))
+
+(defn iso-time [utc]
+  (when-let [epoch (parse-epoch utc)]
+    (str (Instant/ofEpochSecond epoch))))
+
 (defn fuzzy-time-since [utc]
-  (let [result (largest-utc-diff
-                (java.time.Instant/ofEpochSecond
-                 (Long/parseLong utc)))
-        amount (:amount result)]
-    (case (:type result)
-      :just-now     "Just now"
-      :minutes-ago  (str amount (if (> amount 1) " minutes ago" " minute ago"))
-      :hours-ago    (str amount (if (> amount 1) " hours ago" " hour ago"))
-      :days-ago     (str amount (if (> amount 1) " days ago" " day ago"))
-      :absolute     (let [zdt (ZonedDateTime/ofInstant (:instant result) ZoneOffset/UTC)]
-                      (.format zdt (DateTimeFormatter/ofPattern "d MMMM, yyyy"))))))
+  (if-let [epoch (parse-epoch utc)]
+    (let [result (largest-utc-diff (Instant/ofEpochSecond epoch))
+          amount (:amount result)]
+      (case (:type result)
+        :just-now     "Just now"
+        :minutes-ago  (str amount (if (> amount 1) " minutes ago" " minute ago"))
+        :hours-ago    (str amount (if (> amount 1) " hours ago" " hour ago"))
+        :days-ago     (str amount (if (> amount 1) " days ago" " day ago"))
+        :absolute     (let [zdt (ZonedDateTime/ofInstant (:instant result) ZoneOffset/UTC)]
+                        (.format zdt (DateTimeFormatter/ofPattern "d MMMM, yyyy")))))
+    (str utc)))

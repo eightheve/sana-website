@@ -6,7 +6,6 @@
             [server.hit-counter :as hit-counter]
             [server.blog :as blog]
             [server.guestbook :as guestbook]
-            [server.time-diff :as time-diff]
             [server.fiction :as fiction]))
 
 (def content
@@ -21,7 +20,6 @@
 ;; MODULES
 (defn page-header [page-key request]
   (let [header (get content :header)
-        pages  (vals header)
         ;; derive parent key: :spaces/nixos -> :spaces, :index -> :index
         parent-key   (keyword (namespace page-key))
         current-main (if parent-key
@@ -69,7 +67,7 @@
            [:tr [:td {:class "label"} [:span (:label contact)]]
                 [:td {:class "address"} (:id contact)]])]]))
 
-(defn fiction []
+(defn fiction-index []
   (let [projects (fiction/list-projects)]
     (list
      [:p (t [:spaces/fiction :intro :body])]
@@ -80,35 +78,32 @@
           [:p (h/raw (:blurb project))])]))))
 
 (defn fiction-project [request]
-  (let [slug (get-in request [:route-params :project])
-        project (fiction/get-project slug)]
+  (let [project (get request :fiction/project)]
     (when project
       (list
        [:h2 (:title project)]
        (when (:intro project)
          [:div (h/raw (:intro project))])
        (when (seq (:chapters project))
-         [:h3 "Chapters"]
-         [:ul
-          (for [ch (:chapters project)]
-            [:li [:a {:href (str "/spaces/fiction/" slug "/chapters/" (:slug ch))}
-                  (clojure.string/replace (:slug ch) "-" " ")]])])))))
+         (list
+          [:h3 "Chapters"]
+          [:ul
+           (for [ch (:chapters project)]
+             [:li [:a {:href (str "/spaces/fiction/" (:slug project) "/chapters/" (:slug ch))}
+                   (string/replace (:slug ch) "-" " ")]])]))))))
 
 (defn fiction-chapter [request]
-  (let [project-slug (get-in request [:route-params :project])
-        chapter-slug (get-in request [:route-params :chapter])
-        project (fiction/get-project project-slug)
-        chapter (fiction/get-chapter project-slug chapter-slug)]
+  (let [{:keys [project chapter]} (get request :fiction/chapter)]
     (when chapter
       (list
-       [:h2 (clojure.string/replace (:slug chapter) "-" " ")]
+       [:h2 (string/replace (:slug chapter) "-" " ")]
        (when (:html chapter)
          (list (let [chapters-by-order (into {} (map (juxt :order identity)) (:chapters project))
                      ordinal (:order chapter)
                      prev (get chapters-by-order (dec ordinal))
                      next (get chapters-by-order (inc ordinal))
-                     chapter-name #(clojure.string/replace (:slug %) "-" " ")
-                     project-url (str "/spaces/fiction/" project-slug "/")
+                     chapter-name #(string/replace (:slug %) "-" " ")
+                     project-url (str "/spaces/fiction/" (:slug project) "/")
                      chapter-url #(str project-url "chapters/" (:slug %))]
                  [:ul {:id "chapter-navigation"}
                   [:li (when-some [p prev]
@@ -139,9 +134,9 @@
     (case page-key
      :index (index)
      :sana (sana)
-     :blog (blog/get-page (get request :blog/page))
+     :blog (blog/render-page (get request :blog/page-data))
 
-     :spaces/fiction (fiction)
+     :spaces/fiction (fiction-index)
      :spaces/fiction-project (fiction-project request)
      :spaces/fiction-chapter (fiction-chapter request)
      :spaces/guestbook (guestbook/get-page)
